@@ -1,7 +1,7 @@
 # PSPL_CMS_AVIONICS_COTS_FSW
 
-## Requirements
-- Docker buildx
+## Dependencies
+- Docker
 
 ## Build Steps
 ```
