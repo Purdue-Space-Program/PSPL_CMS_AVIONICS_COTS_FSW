@@ -22,14 +22,11 @@ RUN git clone https://github.com/cbl17/daqhats.git /daqhats
 WORKDIR /daqhats
 RUN ./install.sh
 
-# Copy application source code
 WORKDIR /fsw
 COPY . .
 
-# Configure and build the project
-RUN cmake -S . -B build -G Ninja && \
-    cmake --build build --target install
+RUN cmake -S . -B build -G Ninja
+RUN cmake --build build --target install
 
-# Stage 2: Extract only the compiled binary
 FROM scratch AS export-stage
 COPY --from=builder /fsw/install/bin/fsw ./
