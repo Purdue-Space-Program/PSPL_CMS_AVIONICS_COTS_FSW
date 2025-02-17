@@ -35,7 +35,7 @@ void* daq(void* arg) {
     double value;
     while (true) {
         struct timespec time;
-        clock_gettime(CLOCK_REALTIME, &time);
+        clock_gettime(CLOCK_MONOTONIC, &time);
         // TODO: FDIR
         time.tv_nsec += 500000000;
         if (time.tv_nsec >= 1000000000) {
@@ -46,7 +46,7 @@ void* daq(void* arg) {
         for (uint8_t ch = Sensor::AI_CHANNEL_START; ch < Sensor::NUM_AI_CHANNELS; ch += 1) {
             struct timespec timestamp;
             result = mcc118_a_in_read(Daq::DAQHAT_ADDRESS, ch, options, &value);
-            clock_gettime(CLOCK_REALTIME, &timestamp);
+            clock_gettime(CLOCK_MONOTONIC, &timestamp);
             data_queue.enqueue({
                 .sensor_id = ch,
                 .timestamp = timestamp.tv_sec * 1000000UL + timestamp.tv_nsec / 1000UL,
@@ -54,7 +54,7 @@ void* daq(void* arg) {
             });
         }
 
-        clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &time, NULL);
+        clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &time, NULL);
         // TODO: FDIR
     }
 }
