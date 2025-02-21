@@ -1,6 +1,4 @@
-FROM --platform=linux/arm64 ubuntu:22.04 AS builder
-
-ENV DEBIAN_FRONTEND=noninteractive
+FROM ubuntu:22.04 AS builder
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -29,4 +27,4 @@ RUN cmake -S . -B build -G Ninja
 RUN cmake --build build --target install
 
 FROM scratch AS export-stage
-COPY --from=builder /fsw/install/bin/fsw ./
+COPY --from=builder /usr/local/bin/fsw /usr/local/bin/fsw
