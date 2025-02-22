@@ -7,6 +7,7 @@ add_executable(fsw
     src/main.cc
     src/bang_bang_controller.cpp
     src/command_handler.cpp
+    src/telemetry_writer.cpp
     src/daq.cpp
     src/queue.cpp
 )
