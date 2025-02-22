@@ -2,7 +2,13 @@
 #define __STATE_HPP__
 
 #include <stdint.h>
+
+#include <config.hpp>
 #include <queue.hpp>
+
+namespace SysState {
+    extern State system_state;
+}
 
 // Bang Bang State
 namespace BB_State {
@@ -22,7 +28,7 @@ namespace BB_State {
 }
 
 // Sensor State
-namespace Sensor {
+namespace Telemetry {
     extern Queue data_queue;
 
     extern uint64_t he_pressure;
