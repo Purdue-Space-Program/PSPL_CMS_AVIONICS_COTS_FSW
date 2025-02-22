@@ -2,6 +2,7 @@
 #define __QUEUE_HPP__
 
 #include "config.hpp"
+#include <mutex>
 #include <protocols.hpp>
 
 class Queue {
@@ -11,6 +12,7 @@ private:
     uint32_t front;
     uint32_t back;
     uint32_t count;
+    std::mutex q_mut;
 
 public:
     Queue() : size(Telemetry::DATA_QUEUE_LENGTH), front(0), back(0), count(0) {}
