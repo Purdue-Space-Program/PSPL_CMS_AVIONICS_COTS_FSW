@@ -17,7 +17,7 @@ private:
 public:
     Queue() : size(Telemetry::DATA_QUEUE_LENGTH), front(0), back(0), count(0) {}
     void enqueue(Telemetry::SensorPacket_t value);
-    Telemetry::SensorPacket_t dequeue();
+    void dequeue(Telemetry::SensorPacket_t* packet);
     bool is_empty();
     uint32_t get_size();
 };

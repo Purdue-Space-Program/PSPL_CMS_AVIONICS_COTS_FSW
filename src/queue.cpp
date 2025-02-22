@@ -1,3 +1,4 @@
+#include "protocols.hpp"
 #include <queue.hpp>
 
 using namespace Telemetry;
@@ -17,7 +18,7 @@ void Queue::enqueue(SensorPacket_t value) {
     q_mut.unlock();
 }
 
-SensorPacket_t Queue::dequeue() {
+void Queue::dequeue(SensorPacket_t* packet) {
     if (count == 0) {
         // empty
         return;
@@ -31,7 +32,7 @@ SensorPacket_t Queue::dequeue() {
 
     q_mut.unlock();
 
-    return value;
+    *packet = value;
 }
 
 bool Queue::is_empty() {
