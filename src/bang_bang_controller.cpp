@@ -16,6 +16,11 @@ uint64_t BB_State::bb_ox_upper_setp = UINT64_MAX;
 uint64_t BB_State::bb_ox_lower_setp = UINT64_MAX - 1;
 
 void* bang_bang_controller(void* arg) {
+    struct sched_param param;
+    param.sched_priority = 99; // highest prio
+    pthread_setschedparam(pthread_self(), SCHED_RR, &param);
+
+    // TODO: FDIR
     struct gpiod_chip *bb_chip;
     struct gpiod_line *bb_fu_line;
     struct gpiod_line *bb_ox_line;
@@ -42,11 +47,20 @@ void* bang_bang_controller(void* arg) {
     }
     
     while (true) {
+        struct timespec time;
+        clock_gettime(CLOCK_MONOTONIC, &time);
+        // TODO: FDIR
+        time.tv_nsec += BB_Constants::TICK_RATE_MS * 1000000;
+        if (time.tv_nsec >= 1000000000) {
+            time.tv_sec += 1;
+            time.tv_nsec -= 1000000000;
+        }
+
         int new_fu_state;
         int new_ox_state;
 
-        int curr_fu_pressure = Sensor::fu_pressure;
-        int curr_ox_pressure = Sensor::ox_pressure;
+        int curr_fu_pressure = Telemetry::fu_pressure;
+        int curr_ox_pressure = Telemetry::ox_pressure;
 
         // find new FU state
         switch (bb_fu_state) {
@@ -94,10 +108,13 @@ void* bang_bang_controller(void* arg) {
         if (gpiod_line_set_value(bb_ox_line, new_ox_state) < 0) {
             // TODO: FDIR
         }
+        clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &time, NULL);
+        // TODO: FDIR
     }
 
     gpiod_line_release(bb_fu_line);
     gpiod_line_release(bb_ox_line);
     gpiod_chip_close(bb_chip);
+
 }
 
