@@ -27,4 +27,4 @@ RUN cmake -S . -B build -G Ninja
 RUN cmake --build build --target install
 
 FROM scratch AS export-stage
-COPY --from=builder /usr/local/bin/fsw /usr/local/bin/fsw
+COPY --from=builder /usr/local/bin/fsw ./
