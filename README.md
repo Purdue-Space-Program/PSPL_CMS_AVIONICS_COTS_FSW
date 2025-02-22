@@ -5,5 +5,5 @@
 
 ## Build Steps
 ```
-docker buildx build --platform linux/arm64 --output type=local,dest=./ .
+./build.sh
 ```
