@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <sched.h>
 #include <time.h>
+#include <string.h>
 #include <daqhats/daqhats.h>
 #include <daqhats/mcc118.h>
 
@@ -48,10 +49,14 @@ void* daq(void* arg) {
             result = mcc118_a_in_read(Daq::ADDRESS, ch, options, &value);
             clock_gettime(CLOCK_MONOTONIC, &timestamp);
 
+            uint64_t data_value;
+            memcpy(&data_value, &value, sizeof(data_value));
+
+            // Enqueue data
             Telemetry::data_queue.enqueue({
                 .sensor_id = ch,
-                .timestamp = timestamp.tv_sec * 1000000UL + timestamp.tv_nsec / 1000UL,
-                .data = *(uint64_t*)(&value),
+                .timestamp = timestamp.tv_sec * 1000000UL + timestamp.tv_nsec / 1000UL, // Convert ns -> us
+                .data = data_value,
             });
         }
 
