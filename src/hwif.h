@@ -13,7 +13,7 @@ void    DEV_Digital_Write(uint8_t pin, uint8_t value);
 
 void pspl_spi_xfer(void *tx, void *rx, size_t len);
 
-uint8_t DEV_SPI_WriteByte(uint8_t byte) {
+static uint8_t DEV_SPI_WriteByte(uint8_t byte) {
   uint8_t rx = 0;
   pspl_spi_xfer(&byte, &rx, 1);
   return rx;
