@@ -9,7 +9,16 @@ static const uint8_t DEV_DRDY_PIN = 2;
 
 uint8_t DEV_Digital_Read(uint8_t pin);
 void    DEV_Digital_Write(uint8_t pin, uint8_t value);
-void    DEV_Delay_ms(uint32_t ms);
 
 uint8_t        DEV_SPI_WriteByte(uint8_t byte);
 static uint8_t DEV_SPI_ReadByte(void) { return DEV_SPI_WriteByte(0); }
+
+void DEV_Delay_ms(uint32_t ms);
+
+// call these before using the GPIO or SPI functions
+void pspl_gpio_init(void);
+void pspl_spi_init(void);
+
+// call this when done
+void pspl_gpio_deinit(void);
+void pspl_spi_deinit(void);

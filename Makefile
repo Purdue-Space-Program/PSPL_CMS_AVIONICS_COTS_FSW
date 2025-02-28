@@ -1,4 +1,4 @@
-CFLAGS = -Wall -Wextra -std=c11 -O2
+CFLAGS = -std=c11 -O2
 OBJS = bin/ads1263.o bin/hwif.o
 
 .PHONY: all clean

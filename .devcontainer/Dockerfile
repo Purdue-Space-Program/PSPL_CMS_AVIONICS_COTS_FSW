@@ -1,4 +1,4 @@
-FROM --platform=linux/arm64 ubuntu:22.04 
+FROM --platform=linux/arm64 debian:bookworm
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -9,6 +9,9 @@ RUN apt-get update && apt-get install -y \
     gpiod \
     libgpiod-dev \
     ninja-build
+
+RUN apt-get install -y bear
+RUN apt-get install -y clangd
 
 RUN groupadd -g 1000 builder && \
 useradd -u 1000 -g builder -m builder
