@@ -10,7 +10,7 @@ OBJS = $(C_OBJS) $(CXX_OBJS)
 all: bin/fsw
 
 bin/fsw: $(OBJS)
-	g++ $(CXXFLAGS) -o $@ $^ -lgpiod
+	g++ -o $@ $^ -lgpiod
 
 clean:
 	rm -rf bin
