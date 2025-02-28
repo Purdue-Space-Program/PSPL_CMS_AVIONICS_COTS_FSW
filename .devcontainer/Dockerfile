@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get install -y bear
 RUN apt-get install -y clangd
+RUN apt-get install -y ripgrep
 
 RUN groupadd -g 1000 builder && \
 useradd -u 1000 -g builder -m builder

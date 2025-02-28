@@ -2,11 +2,12 @@
 
 #include <errno.h>
 #include <fcntl.h>
-#include <gpiod.h>
+#include <linux/spi/spidev.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <sys/ioctl.h>
 #include <unistd.h>
+
+#include <gpiod.h>
 
 #pragma region GPIO
 
@@ -28,14 +29,14 @@ static const uint32_t     line_offsets[3] = {DEV_RST_PIN_ACTUAL, DEV_CS_PIN_ACTU
 void pspl_gpio_init(void) {
   chip = gpiod_chip_open_by_number(0);
   if (!chip) {
-    fprintf(stderr, "failed to open chip %d\n", 0);
+    perror("gpiod_chip_open_by_number");
     exit(EXIT_FAILURE);
   }
 
   for (int i = 0; i < 3; i++) {
     lines[i] = gpiod_chip_get_line(chip, line_offsets[i]);
     if (!lines[i]) {
-      fprintf(stderr, "failed to get line %d\n", line_offsets[i]);
+      perror("gpiod_chip_get_line");
       exit(EXIT_FAILURE);
     }
   }
@@ -73,9 +74,62 @@ void pspl_gpio_deinit(void) {
 
 #pragma region SPI
 
+static int            fd_spi    = -1;
+static const uint32_t SPI_SPEED = 1000000;
+
 void pspl_spi_init(void) {
   static const char *device = "/dev/spidev0.0";
   int                fd     = open(device, O_RDWR);
+  if (fd < 0) {
+    perror("open");
+    exit(EXIT_FAILURE);
+  }
+
+  uint8_t mode = SPI_MODE_1;
+  if (ioctl(fd, SPI_IOC_WR_MODE, &mode) < 0) {
+    perror("ioctl");
+    exit(EXIT_FAILURE);
+  }
+
+  uint8_t lsb_first = 0;
+  if (ioctl(fd, SPI_IOC_WR_LSB_FIRST, &lsb_first) < 0) {
+    perror("ioctl");
+    exit(EXIT_FAILURE);
+  }
+
+  uint8_t bits_per_word = 8;
+  if (ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word) < 0) {
+    perror("ioctl");
+    exit(EXIT_FAILURE);
+  }
+
+  uint32_t speed = 1000000;
+  if (ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed) < 0) {
+    perror("ioctl");
+    exit(EXIT_FAILURE);
+  }
+
+  fd_spi = fd;
+}
+
+void pspl_spi_xfer(void *tx, void *rx, size_t len) {
+  struct spi_ioc_transfer tr = {
+      .tx_buf = (uintptr_t)tx,
+      .rx_buf = (uintptr_t)rx,
+
+      .len = len,
+      0,
+  };
+
+  if (ioctl(fd_spi, SPI_IOC_MESSAGE(1), &tr) < 0) {
+    perror("ioctl");
+    exit(EXIT_FAILURE);
+  }
+}
+
+void pspl_spi_deinit() {
+  close(fd_spi);
+  fd_spi = -1;
 }
 
 #pragma endregion
