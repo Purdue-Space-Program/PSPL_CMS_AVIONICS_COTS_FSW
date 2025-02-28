@@ -33,10 +33,6 @@
 
 uint8_t ScanMode = 0;
 
-static const uint8_t DEV_RST_PIN  = 0; // TODO: define this value
-static const uint8_t DEV_CS_PIN   = 0; // TODO: define this value
-static const uint8_t DEV_DRDY_PIN = 0; // TOOD: define this value
-
 /******************************************************************************
 function:   Module reset
 parameter:
