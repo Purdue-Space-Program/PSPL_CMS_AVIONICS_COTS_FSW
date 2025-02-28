@@ -134,6 +134,9 @@ void pspl_spi_deinit() {
 
 #pragma endregion
 
+// not sure why it's not in unistd.h
+int usleep(__useconds_t usec);
+
 void DEV_Delay_ms(uint32_t ms) {
   uint64_t us = (uint64_t)ms * 1000;
   usleep(us);

@@ -30,6 +30,7 @@
 #include "ads1263.h"
 #include "hwif.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 uint8_t ScanMode = 0;
 
@@ -316,6 +317,9 @@ void ADS1263_SetDiffChannal(uint8_t Channal) {
     INPMUX = (6 << 4) | 7; // DiffChannal   AIN6-AIN7
   } else if (Channal == 4) {
     INPMUX = (8 << 4) | 9; // DiffChannal   AIN8-AIN9
+  } else {
+    fprintf(stderr, "Invalid channel number: %d\n", Channal);
+    exit(EXIT_FAILURE);
   }
   ADS1263_WriteReg(REG_INPMUX, INPMUX);
   if (ADS1263_Read_data(REG_INPMUX) == INPMUX) {
@@ -343,6 +347,9 @@ void ADS1263_SetDiffChannal_ADC2(uint8_t Channal) {
     INPMUX = (6 << 4) | 7; // DiffChannal   AIN6-AIN7
   } else if (Channal == 4) {
     INPMUX = (8 << 4) | 9; // DiffChannal   AIN8-AIN9
+  } else {
+    fprintf(stderr, "Invalid channel number: %d\n", Channal);
+    exit(EXIT_FAILURE);
   }
   ADS1263_WriteReg(REG_ADC2MUX, INPMUX);
   if (ADS1263_Read_data(REG_ADC2MUX) == INPMUX) {
