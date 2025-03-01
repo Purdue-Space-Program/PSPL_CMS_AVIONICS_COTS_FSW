@@ -11,9 +11,11 @@ add_executable(fsw
     src/main.cc
     src/queue.cpp
     src/telemetry_writer.cpp
+    src/ads1263.c
+    src/hwif.c
 )
 
-target_link_libraries(fsw daqhats gpiod)
+target_link_libraries(fsw gpiod)
 include_directories(fsw include)
 
 add_compile_options(fsw

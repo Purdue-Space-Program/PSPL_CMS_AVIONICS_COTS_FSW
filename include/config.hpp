@@ -2,7 +2,6 @@
 #define __CONFIG_HPP__
 
 #include <stdint.h>
-#include <daqhats/daqhats.h>
 
 namespace SysState {
     enum class State {
@@ -35,8 +34,6 @@ namespace Command {
 }
 
 namespace Daq {
-    constexpr int ADDRESS = 0;
-    constexpr uint32_t OPTIONS = OPTS_DEFAULT;
 }
 
 namespace Telemetry {

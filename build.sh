@@ -1,1 +1,4 @@
-docker buildx build --platform linux/arm64 --output type=local,dest=./ .
+#!/bin/bash
+
+cmake -B build -G Ninja
+cmake --build build

@@ -5,8 +5,7 @@
 #include <sched.h>
 #include <time.h>
 #include <string.h>
-#include <daqhats/daqhats.h>
-#include <daqhats/mcc118.h>
+#include <stdint.h>
 
 #include "config.hpp"
 #include "queue.hpp"
@@ -26,12 +25,6 @@ void* daq(void* arg) {
     pthread_setschedparam(pthread_self(), SCHED_RR, &param);
     // TODO: FDIR
 
-    int result = mcc118_open(Daq::ADDRESS);
-    if (result != RESULT_SUCCESS) {
-        // TODO: FDIR
-    }
-
-    uint32_t options = OPTS_DEFAULT;
     double value;
     while (true) {
         struct timespec time;
@@ -46,7 +39,6 @@ void* daq(void* arg) {
         for (uint8_t ch = Telemetry::AI_CHANNEL_START; ch < Telemetry::NUM_AI_CHANNELS; ch += 1) {
             struct timespec timestamp;
 
-            result = mcc118_a_in_read(Daq::ADDRESS, ch, options, &value);
             clock_gettime(CLOCK_MONOTONIC, &timestamp);
 
             uint64_t data_value;

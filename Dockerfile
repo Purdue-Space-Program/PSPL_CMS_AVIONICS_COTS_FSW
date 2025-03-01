@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 AS builder
+FROM --platform=linux/arm64 debian:bookworm
 
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -8,23 +8,13 @@ RUN apt-get update && apt-get install -y \
     curl \
     gpiod \
     libgpiod-dev \
-    libgtk-3-dev \
-    ninja-build \
-    gcc-aarch64-linux-gnu \
-    g++-aarch64-linux-gnu \
-    binutils-aarch64-linux-gnu \
-    && rm -rf /var/lib/apt/lists/*
+    ninja-build
 
-# Clone and install dependencies
-RUN git clone https://github.com/cbl17/daqhats.git /daqhats
-WORKDIR /daqhats
-RUN ./install.sh
+RUN apt-get install -y bear
+RUN apt-get install -y clangd
+RUN apt-get install -y ripgrep
 
-WORKDIR /fsw
-COPY . .
+RUN groupadd -g 1000 builder && \
+useradd -u 1000 -g builder -m builder
 
-RUN cmake -S . -B build -G Ninja
-RUN cmake --build build --target install
-
-FROM scratch AS export-stage
-COPY --from=builder /usr/local/bin/fsw ./
+USER builder
