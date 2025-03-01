@@ -1,6 +1,5 @@
 #include "hwif.h"
 
-#include <errno.h>
 #include <fcntl.h>
 #include <linux/spi/spidev.h>
 #include <stdio.h>
@@ -24,12 +23,12 @@ static const uint8_t DEV_DRDY_PIN_ACTUAL = 17;
 // copy pasted from libgpiod libgpiod examples
 static struct gpiod_chip *chip            = NULL;
 static struct gpiod_line *lines[3]        = {0};
-static const uint32_t     line_offsets[3] = {DEV_RST_PIN_ACTUAL, DEV_CS_PIN_ACTUAL, DEV_DRDY_PIN_ACTUAL};
+static const  uint32_t     line_offsets[3] = {DEV_RST_PIN_ACTUAL, DEV_CS_PIN_ACTUAL, DEV_DRDY_PIN_ACTUAL};
 
 void pspl_gpio_init(void) {
-  chip = gpiod_chip_open_by_number(0);
+  chip = gpiod_chip_open_by_name("gpiochip0");
   if (!chip) {
-    perror("gpiod_chip_open_by_number");
+    perror("gpiod_chip_open_by_name");
     exit(EXIT_FAILURE);
   }
 
@@ -40,6 +39,21 @@ void pspl_gpio_init(void) {
       exit(EXIT_FAILURE);
     }
   }
+    int ret = gpiod_line_request_output(lines[0], "idk", 0);
+    if (ret < 0) {
+        perror("gpiod_line_request_output");
+        exit(EXIT_FAILURE);
+    }
+    ret = gpiod_line_request_output(lines[1], "idk", 0);
+    if (ret < 0) {
+        perror("gpiod_line_request_output");
+        exit(EXIT_FAILURE);
+    }
+    ret = gpiod_line_request_input(lines[2], "idk");
+    if (ret < 0) {
+        perror("gpiod_line_request_input");
+        exit(EXIT_FAILURE);
+    }
 }
 
 uint8_t DEV_Digital_Read(uint8_t pin) {

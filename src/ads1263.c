@@ -54,7 +54,7 @@ parameter:
         Cmd: command
 Info:
 ******************************************************************************/
-static void ADS1263_WriteCmd(uint8_t Cmd) {
+void ADS1263_WriteCmd(uint8_t Cmd) {
   DEV_Digital_Write(DEV_CS_PIN, 0);
   DEV_SPI_WriteByte(Cmd);
   DEV_Digital_Write(DEV_CS_PIN, 1);
@@ -67,7 +67,7 @@ parameter:
         data: Written data
 Info:
 ******************************************************************************/
-static void ADS1263_WriteReg(uint8_t Reg, uint8_t data) {
+void ADS1263_WriteReg(uint8_t Reg, uint8_t data) {
   DEV_Digital_Write(DEV_CS_PIN, 0);
   DEV_SPI_WriteByte(CMD_WREG | Reg);
   DEV_SPI_WriteByte(0x00);
@@ -82,12 +82,11 @@ parameter:
 Info:
     Return the read data
 ******************************************************************************/
-static uint8_t ADS1263_Read_data(uint8_t Reg) {
+uint8_t ADS1263_Read_data(uint8_t Reg) {
   uint8_t temp = 0;
   DEV_Digital_Write(DEV_CS_PIN, 0);
   DEV_SPI_WriteByte(CMD_RREG | Reg);
   DEV_SPI_WriteByte(0x00);
-  // DEV_Delay_ms(1);
   temp = DEV_SPI_ReadByte();
   DEV_Digital_Write(DEV_CS_PIN, 1);
   return temp;
@@ -109,7 +108,6 @@ static uint8_t ADS1263_Checksum(uint32_t val, uint8_t byt) {
     val >>= 8;         // shift down
   }
   sum += 0x9b;
-  // printf("--- %x %x--- \r\n", sum, byt);
   return sum ^ byt; // if equal, this will be 0
 }
 
@@ -120,7 +118,6 @@ Info:
     Timeout indicates that the operation is not working properly.
 ******************************************************************************/
 static void ADS1263_WaitDRDY(void) {
-  // printf("ADS1263_WaitDRDY \r\n");
   uint32_t i = 0;
   while (1) {
     if (DEV_Digital_Read(DEV_DRDY_PIN) == 0)
@@ -130,7 +127,6 @@ static void ADS1263_WaitDRDY(void) {
       break;
     }
   }
-  // printf("ADS1263_WaitDRDY Release \r\n");
 }
 
 /******************************************************************************
@@ -172,34 +168,26 @@ void ADS1263_ConfigADC1(ADS1263_GAIN gain, ADS1263_DRATE drate,
   MODE2 |= (gain << 4) | drate;
   ADS1263_WriteReg(REG_MODE2, MODE2);
   DEV_Delay_ms(1);
-  if (ADS1263_Read_data(REG_MODE2) == MODE2)
-    printf("REG_MODE2 success \r\n");
-  else
+  if (ADS1263_Read_data(REG_MODE2) != MODE2)
     printf("REG_MODE2 unsuccess \r\n");
 
   uint8_t REFMUX = 0x24; // 0x00:+-2.5V as REF, 0x24:VDD,VSS as REF
   ADS1263_WriteReg(REG_REFMUX, REFMUX);
   DEV_Delay_ms(1);
-  if (ADS1263_Read_data(REG_REFMUX) == REFMUX)
-    printf("REG_REFMUX success \r\n");
-  else
+  if (ADS1263_Read_data(REG_REFMUX) != REFMUX)
     printf("REG_REFMUX unsuccess \r\n");
 
   uint8_t MODE0 = delay;
   ADS1263_WriteReg(REG_MODE0, MODE0);
   DEV_Delay_ms(1);
-  if (ADS1263_Read_data(REG_MODE0) == MODE0)
-    printf("REG_MODE0 success \r\n");
-  else
+  if (ADS1263_Read_data(REG_MODE0) != MODE0)
     printf("REG_MODE0 unsuccess \r\n");
 
-  uint8_t MODE1 = 0x84; // Digital Filter; 0x84:FIR, 0x64:Sinc4, 0x44:Sinc3,
+  uint8_t MODE1 = 0x64; // Digital Filter; 0x84:FIR, 0x64:Sinc4, 0x44:Sinc3,
                         // 0x24:Sinc2, 0x04:Sinc1
   ADS1263_WriteReg(REG_MODE1, MODE1);
   DEV_Delay_ms(1);
-  if (ADS1263_Read_data(REG_MODE1) == MODE1)
-    printf("REG_MODE1 success \r\n");
-  else
+  if (ADS1263_Read_data(REG_MODE1) != MODE1)
     printf("REG_MODE1 unsuccess \r\n");
 }
 
@@ -216,17 +204,13 @@ void ADS1263_ConfigADC2(ADS1263_ADC2_GAIN gain, ADS1263_ADC2_DRATE drate,
   ADC2CFG |= (drate << 6) | gain;
   ADS1263_WriteReg(REG_ADC2CFG, ADC2CFG);
   DEV_Delay_ms(1);
-  if (ADS1263_Read_data(REG_ADC2CFG) == ADC2CFG)
-    printf("REG_ADC2CFG success \r\n");
-  else
+  if (ADS1263_Read_data(REG_ADC2CFG) != ADC2CFG)
     printf("REG_ADC2CFG unsuccess \r\n");
 
   uint8_t MODE0 = delay;
   ADS1263_WriteReg(REG_MODE0, MODE0);
   DEV_Delay_ms(1);
-  if (ADS1263_Read_data(REG_MODE0) == MODE0)
-    printf("REG_MODE0 success \r\n");
-  else
+  if (ADS1263_Read_data(REG_MODE0) != MODE0)
     printf("REG_MODE0 unsuccess \r\n");
 }
 
@@ -237,9 +221,7 @@ Info:
 ******************************************************************************/
 uint8_t ADS1263_init_ADC1(ADS1263_DRATE rate) {
   ADS1263_reset();
-  if (ADS1263_ReadChipID() == 1) {
-    printf("ID Read success \r\n");
-  } else {
+  if (ADS1263_ReadChipID() != 1) {
     printf("ID Read failed \r\n");
     return 1;
   }
@@ -250,9 +232,7 @@ uint8_t ADS1263_init_ADC1(ADS1263_DRATE rate) {
 }
 uint8_t ADS1263_init_ADC2(ADS1263_ADC2_DRATE rate) {
   ADS1263_reset();
-  if (ADS1263_ReadChipID() == 1) {
-    printf("ID Read success \r\n");
-  } else {
+  if (ADS1263_ReadChipID() != 1) {
     printf("ID Read failed \r\n");
     return 1;
   }
@@ -273,9 +253,7 @@ static void ADS1263_SetChannal(uint8_t Channal) {
   }
   uint8_t INPMUX = (Channal << 4) | 0x0a; // 0x0a:VCOM as Negative Input
   ADS1263_WriteReg(REG_INPMUX, INPMUX);
-  if (ADS1263_Read_data(REG_INPMUX) == INPMUX) {
-    // printf("ADS1263_ADC1_SetChannal success \r\n");
-  } else {
+  if (ADS1263_Read_data(REG_INPMUX) != INPMUX) {
     printf("ADS1263_ADC1_SetChannal unsuccess \r\n");
   }
 }
@@ -292,9 +270,7 @@ static void ADS1263_SetChannal_ADC2(uint8_t Channal) {
   }
   uint8_t INPMUX = (Channal << 4) | 0x0a; // 0x0a:VCOM as Negative Input
   ADS1263_WriteReg(REG_ADC2MUX, INPMUX);
-  if (ADS1263_Read_data(REG_ADC2MUX) == INPMUX) {
-    // printf("ADS1263_ADC2_SetChannal success \r\n");
-  } else {
+  if (ADS1263_Read_data(REG_ADC2MUX) != INPMUX) {
     printf("ADS1263_ADC2_SetChannal unsuccess \r\n");
   }
 }
@@ -322,9 +298,7 @@ void ADS1263_SetDiffChannal(uint8_t Channal) {
     exit(EXIT_FAILURE);
   }
   ADS1263_WriteReg(REG_INPMUX, INPMUX);
-  if (ADS1263_Read_data(REG_INPMUX) == INPMUX) {
-    // printf("ADS1263_SetDiffChannal success \r\n");
-  } else {
+  if (ADS1263_Read_data(REG_INPMUX) != INPMUX) {
     printf("ADS1263_SetDiffChannal unsuccess \r\n");
   }
 }
@@ -352,9 +326,7 @@ void ADS1263_SetDiffChannal_ADC2(uint8_t Channal) {
     exit(EXIT_FAILURE);
   }
   ADS1263_WriteReg(REG_ADC2MUX, INPMUX);
-  if (ADS1263_Read_data(REG_ADC2MUX) == INPMUX) {
-    // printf("ADS1263_SetDiffChannal_ADC2 success \r\n");
-  } else {
+  if (ADS1263_Read_data(REG_ADC2MUX) != INPMUX) {
     printf("ADS1263_SetDiffChannal_ADC2 unsuccess \r\n");
   }
 }
@@ -371,7 +343,6 @@ static uint32_t ADS1263_Read_ADC1_Data(void) {
   DEV_Digital_Write(DEV_CS_PIN, 0);
   do {
     DEV_SPI_WriteByte(CMD_RDATA1);
-    // DEV_Delay_ms(10);
     Status = DEV_SPI_ReadByte();
   } while ((Status & 0x40) == 0);
 
@@ -385,8 +356,6 @@ static uint32_t ADS1263_Read_ADC1_Data(void) {
   read |= ((uint32_t)buf[1] << 16);
   read |= ((uint32_t)buf[2] << 8);
   read |= (uint32_t)buf[3];
-  // printf("%x %x %x %x %x %x\r\n", Status, buf[0], buf[1], buf[2], buf[3],
-  // CRC);
   if (ADS1263_Checksum(read, CRC) != 0)
     printf("ADC1 Data read error! \r\n");
   return read;
@@ -405,7 +374,6 @@ static uint32_t ADS1263_Read_ADC2_Data(void) {
   DEV_Digital_Write(DEV_CS_PIN, 0);
   do {
     DEV_SPI_WriteByte(CMD_RDATA2);
-    // DEV_Delay_ms(10);
     Status = DEV_SPI_ReadByte();
   } while ((Status & 0x80) == 0);
 
@@ -418,7 +386,6 @@ static uint32_t ADS1263_Read_ADC2_Data(void) {
   read |= ((uint32_t)buf[0] << 16);
   read |= ((uint32_t)buf[1] << 8);
   read |= (uint32_t)buf[2];
-  // printf("%x %x %x %x %x\r\n", Status, buf[0], buf[1], buf[2], CRC);
   if (ADS1263_Checksum(read, CRC) != 0)
     printf("ADC2 Data read error! \r\n");
   return read;
@@ -432,15 +399,12 @@ Info:
 ******************************************************************************/
 uint32_t ADS1263_GetChannalValue(uint8_t Channel) {
   uint32_t Value = 0;
-  if (ScanMode ==
-      0) { // 0  Single-ended input  10 channel1 Differential input  5 channe
+  if (ScanMode == 0) { // 0  Single-ended input  10 channel1 Differential input  5 channe
     if (Channel > 10) {
       return 0;
     }
     ADS1263_SetChannal(Channel);
-    // DEV_Delay_ms(2);
     // ADS1263_WriteCmd(CMD_START1);
-    // DEV_Delay_ms(2);
     ADS1263_WaitDRDY();
     Value = ADS1263_Read_ADC1_Data();
   } else {
@@ -448,13 +412,10 @@ uint32_t ADS1263_GetChannalValue(uint8_t Channel) {
       return 0;
     }
     ADS1263_SetDiffChannal(Channel);
-    // DEV_Delay_ms(2);
     // ADS1263_WriteCmd(CMD_START1);
-    // DEV_Delay_ms(2);
     ADS1263_WaitDRDY();
     Value = ADS1263_Read_ADC1_Data();
   }
-  // printf("Get IN%d value success \r\n", Channel);
   return Value;
 }
 
@@ -472,21 +433,16 @@ uint32_t ADS1263_GetChannalValue_ADC2(uint8_t Channel) {
       return 0;
     }
     ADS1263_SetChannal_ADC2(Channel);
-    // DEV_Delay_ms(2);
     ADS1263_WriteCmd(CMD_START2);
-    // DEV_Delay_ms(2);
     Value = ADS1263_Read_ADC2_Data();
   } else {
     if (Channel > 4) {
       return 0;
     }
     ADS1263_SetDiffChannal_ADC2(Channel);
-    // DEV_Delay_ms(2);
     ADS1263_WriteCmd(CMD_START2);
-    // DEV_Delay_ms(2);
     Value = ADS1263_Read_ADC2_Data();
   }
-  // printf("Get IN%d value success \r\n", Channel);
   return Value;
 }
 
@@ -501,7 +457,6 @@ void ADS1263_GetAll(uint8_t *List, uint32_t *Value, int Number) {
   for (i = 0; i < Number; i++) {
     Value[i] = ADS1263_GetChannalValue(List[i]);
     // ADS1263_WriteCmd(CMD_STOP1);
-    // DEV_Delay_ms(20);
   }
 }
 
@@ -516,9 +471,7 @@ void ADS1263_GetAll_ADC2(uint32_t *ADC_Value) {
   for (i = 0; i < 10; i++) {
     ADC_Value[i] = ADS1263_GetChannalValue_ADC2(i);
     ADS1263_WriteCmd(CMD_STOP2);
-    // DEV_Delay_ms(20);
   }
-  // printf("----------Read ADC2 value success----------\r\n");
 }
 
 /******************************************************************************
@@ -536,35 +489,28 @@ uint32_t ADS1263_RTD(ADS1263_DELAY delay, ADS1263_GAIN gain,
   // MODE0 (CHOP OFF)
   uint8_t MODE0 = delay;
   ADS1263_WriteReg(REG_MODE0, MODE0);
-  DEV_Delay_ms(1);
 
   //(IDACMUX) IDAC2 AINCOM,IDAC1 AIN3
   uint8_t IDACMUX = (0x0a << 4) | 0x03;
   ADS1263_WriteReg(REG_IDACMUX, IDACMUX);
-  DEV_Delay_ms(1);
 
   //((IDACMAG)) IDAC2 = IDAC1 = 250uA
   uint8_t IDACMAG = (0x03 << 4) | 0x03;
   ADS1263_WriteReg(REG_IDACMAG, IDACMAG);
-  DEV_Delay_ms(1);
 
   uint8_t MODE2 = (gain << 4) | drate;
   ADS1263_WriteReg(REG_MODE2, MODE2);
-  DEV_Delay_ms(1);
 
   // INPMUX (AINP = AIN7, AINN = AIN6)
   uint8_t INPMUX = (0x07 << 4) | 0x06;
   ADS1263_WriteReg(REG_INPMUX, INPMUX);
-  DEV_Delay_ms(1);
 
   // REFMUX AIN4 AIN5
   uint8_t REFMUX = (0x03 << 3) | 0x03;
   ADS1263_WriteReg(REG_REFMUX, REFMUX);
-  DEV_Delay_ms(1);
 
   // Read one conversion
   ADS1263_WriteCmd(CMD_START1);
-  DEV_Delay_ms(10);
   ADS1263_WaitDRDY();
   Value = ADS1263_Read_ADC1_Data();
   ADS1263_WriteCmd(CMD_STOP1);
