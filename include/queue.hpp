@@ -3,6 +3,7 @@
 
 #include "config.hpp"
 #include <mutex>
+#include <semaphore.h>
 #include <protocols.hpp>
 
 class Queue {
@@ -12,14 +13,15 @@ private:
     uint32_t front;
     uint32_t back;
     uint32_t count;
+    sem_t sema;
     std::mutex q_mut;
 
 public:
-    Queue() : size(Telemetry::DATA_QUEUE_LENGTH), front(0), back(0), count(0) {}
+    Queue();
     void enqueue(Telemetry::SensorPacket_t value);
-    void dequeue(Telemetry::SensorPacket_t* packet);
+    int dequeue(Telemetry::SensorPacket_t* packet);
     bool is_empty();
     uint32_t get_size();
 };
 
-#endif
+#endi

@@ -1,7 +1,14 @@
+
+#include "config.hpp"
 #include "protocols.hpp"
 #include <queue.hpp>
+#include <semaphore.h>
 
 using namespace Telemetry;
+
+Queue::Queue() : size(Telemetry::DATA_QUEUE_LENGTH), front(0), back(0), count(0) {
+    sem_init(&sema, 0, 0);
+}
 
 void Queue::enqueue(SensorPacket_t value) {
     if (count == size) {
@@ -15,13 +22,19 @@ void Queue::enqueue(SensorPacket_t value) {
     back = (back + 1) % size;
     count += 1;
 
+    if (count == DATA_QUEUE_LENGTH) {
+        sem_post(&sema);
+    }
+
     q_mut.unlock();
 }
 
-void Queue::dequeue(SensorPacket_t* packet) {
+int Queue::dequeue(SensorPacket_t* packet) {
     if (count == 0) {
         // empty
-        return;
+        return -1;
+    } else if (count == DATA_QUEUE_LENGTH) {
+        sem_wait(&sema);
     }
 
     q_mut.lock();
@@ -33,6 +46,8 @@ void Queue::dequeue(SensorPacket_t* packet) {
     q_mut.unlock();
 
     *packet = value;
+
+    return 0;
 }
 
 bool Queue::is_empty() {
