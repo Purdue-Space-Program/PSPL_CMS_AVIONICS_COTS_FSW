@@ -15,8 +15,8 @@ add_executable(fsw
     src/telemetry_writer.cpp
 )
 
+target_include_directories(fsw PRIVATE include)
 target_link_libraries(fsw gpiod)
-include_directories(fsw include)
 
 add_compile_options(fsw
     -O3

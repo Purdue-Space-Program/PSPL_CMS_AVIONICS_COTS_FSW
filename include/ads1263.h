@@ -173,6 +173,10 @@ typedef enum {
   CMD_WREG2   = 0x00, // number of registers to write minus 1, 000n nnnn
 } ADS1263_CMD;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 uint8_t  ADS1263_init_ADC1(ADS1263_DRATE rate);
 uint8_t  ADS1263_init_ADC2(ADS1263_ADC2_DRATE rate);
 void     ADS1263_SetMode(uint8_t Mode);
@@ -185,3 +189,7 @@ void     ADS1263_DAC(ADS1263_DAC_VOLT volt, uint8_t isPositive, uint8_t isClose)
 void     ADS1263_ConfigADC1(ADS1263_GAIN gain, ADS1263_DRATE drate, ADS1263_DELAY delay);
 void     ADS1263_WriteCmd(uint8_t Cmd);
 uint8_t  ADS1263_Read_data(uint8_t Reg);
+
+#ifdef __cplusplus
+}
+#endif
