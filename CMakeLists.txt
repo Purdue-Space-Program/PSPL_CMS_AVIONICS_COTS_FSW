@@ -5,14 +5,14 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS True)
 
 add_executable(fsw 
+    src/ads1263.c
     src/bang_bang_controller.cpp
     src/command_handler.cpp
     src/daq.cpp
+    src/hwif.c
     src/main.cc
     src/queue.cpp
     src/telemetry_writer.cpp
-    src/ads1263.c
-    src/hwif.c
 )
 
 target_link_libraries(fsw gpiod)
