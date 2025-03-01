@@ -1,0 +1,9 @@
+[package]
+name = "cms-cots-fsw"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.96"
+gpiod = "0.3.0"
+spidev = "0.6.0"

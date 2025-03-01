@@ -18,3 +18,5 @@ RUN groupadd -g 1000 builder && \
 useradd -u 1000 -g builder -m builder
 
 USER builder
+
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
