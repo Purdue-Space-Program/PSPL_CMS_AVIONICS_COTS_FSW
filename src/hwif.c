@@ -35,11 +35,16 @@ void pspl_gpio_init(void) {
 
   for (int i = 0; i < 3; i++) {
     lines[i] = gpiod_chip_get_line(chip, line_offsets[i]);
+    gpiod_line_request_output(lines[i], "ads1263", 0);
     if (!lines[i]) {
       perror("gpiod_chip_get_line");
       exit(EXIT_FAILURE);
     }
   }
+
+  gpiod_line_request_output(lines[0], "ads1263", 0);
+  gpiod_line_request_output(lines[1], "ads1263", 0);
+  gpiod_line_request_input(lines[2], "ads1263");
 }
 
 uint8_t DEV_Digital_Read(uint8_t pin) {
