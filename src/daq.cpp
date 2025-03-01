@@ -10,6 +10,7 @@
 #include "config.hpp"
 #include "queue.hpp"
 #include "state.hpp"
+#include "ads1263.h"
 
 uint64_t Telemetry::he_pressure = 0;
 uint64_t Telemetry::fu_pressure = 0;
@@ -25,12 +26,11 @@ void* daq(void* arg) {
     pthread_setschedparam(pthread_self(), SCHED_RR, &param);
     // TODO: FDIR
 
-    double value;
     while (true) {
         struct timespec time;
         clock_gettime(CLOCK_MONOTONIC, &time);
         // TODO: FDIR
-        time.tv_nsec += Telemetry::POLL_RATE_MS * 1000000;
+        time.tv_nsec += Telemetry::TICK_RATE_MS * 1000000;
         if (time.tv_nsec >= 1000000000) {
             time.tv_sec += 1;
             time.tv_nsec -= 1000000000;
@@ -39,10 +39,12 @@ void* daq(void* arg) {
         for (uint8_t ch = Telemetry::AI_CHANNEL_START; ch < Telemetry::NUM_AI_CHANNELS; ch += 1) {
             struct timespec timestamp;
 
+            // read data
+            uint64_t value = ADS1263_GetChannalValue(ch);
             clock_gettime(CLOCK_MONOTONIC, &timestamp);
 
             uint64_t data_value;
-            memcpy(&data_value, &value, sizeof(data_value));
+            memcpy(&data_value, &value, sizeof(value));
 
             // Enqueue data
             Telemetry::data_queue.enqueue({
