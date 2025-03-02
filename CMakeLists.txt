@@ -13,7 +13,7 @@ add_executable(fsw
     src/hwif.cpp
     src/main.cpp
     src/queue.cpp
-    src/telemetry_writer.cpp
+    src/data_writer.cpp
 )
 
 target_include_directories(fsw PRIVATE include)

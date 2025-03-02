@@ -6,7 +6,7 @@ extern "C" {
 }
 
 int main() {
-    void* (*funcs[])(void*) = { daq, command_handler, bang_bang_controller, telemetry_writer };
+    void* (*funcs[])(void*) = { daq, command_handler, bang_bang_controller, data_writer };
     pthread_t threads[4] = {0};
 
     puts("Startup...");
