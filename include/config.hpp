@@ -1,6 +1,7 @@
 #ifndef __CONFIG_HPP__
 #define __CONFIG_HPP__
 
+#include <linux/spi/spi.h>
 #include <stdint.h>
 
 namespace SysState {
@@ -22,7 +23,8 @@ namespace BB_Constants {
     constexpr const char* BB_GPIO_CHIP_NAME = "gpiochip0";
     
     // gpio 8,9,10,11,12,13,26 are in use by the daqhat
-    constexpr int   BB_FU_GPIO_PIN = 14;
+    // dont use gpio 14 either idk why
+    constexpr int   BB_FU_GPIO_PIN = 20;
     constexpr int   BB_OX_GPIO_PIN = 21;
 
     constexpr uint8_t TICK_RATE_MS = 50;
@@ -30,14 +32,19 @@ namespace BB_Constants {
 
 namespace Command {
     constexpr int CMD_PORT = 1234;
-    constexpr uint8_t TICK_RATE_MS = 1;
+    constexpr uint8_t TICK_RATE_MS    = 1;
+    constexpr uint8_t SOCK_TIMEOUT_MS = 100;
 }
 
 namespace Daq {
+    constexpr const char* SPI_DEVICE = "/dev/spidev0.0";
+    constexpr int SPI_MODE           = SPI_MODE_1;
+    constexpr int SPI_BAUD           = 500000;
+    constexpr int SPI_BITS_PER_WORD  = 8;
 }
 
 namespace Telemetry {
-    constexpr const char* IP = "192.168.2.100";
+    constexpr const char* IP = "192.168.2.118";
     constexpr int PORT = 25565;
 
     constexpr uint32_t DATA_QUEUE_LENGTH = 1024;
@@ -48,9 +55,9 @@ namespace Telemetry {
     constexpr uint8_t CHANNEL_PT_OX    = 2;
     constexpr uint8_t CHANNEL_TC_0     = 3;
     constexpr uint8_t CHANNEL_TC_1     = 4;
-    constexpr uint8_t NUM_AI_CHANNELS  = 5;
+    constexpr uint8_t NUM_AI_CHANNELS  = 10;
 
-    constexpr uint8_t POLL_RATE_MS = 1;
+    constexpr uint8_t TICK_RATE_MS = 1;
 }
 
 void* daq(void* arg);
