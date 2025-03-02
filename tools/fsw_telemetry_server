@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+
+import os
+import struct
+import socket
+import threading
+
+packet_struct = struct.Struct("<QQB")
+packet_size = packet_struct.size
+socks = []
+
+
+def telem_file_reader():
+    global socks
+    f = open("/var/lib/pspl_fsw/latest.bin", "rb")
+    packets = []
+    backlog = b""
+
+    while True:
+        data = f.read(1024)
+        if data:
+            backlog += data
+
+        while len(backlog) >= packet_size:
+            packet = backlog[:packet_size]
+            backlog = backlog[packet_size:]
+            packets.append(packet)
+
+        while len(packets) > 0:
+            packet = packets.pop(0)
+            sock: socket.socket = None
+            for sock, addr in socks:
+                try:
+                    sock.sendall(packet)
+                except Exception:
+                    print(f"address {addr} disconnected")
+                    socks.remove(sock)
+
+
+def main():
+    file_reader_thr = threading.Thread(target=telem_file_reader, daemon=True)
+    file_reader_thr.start()
+
+    host = "0.0.0.0"
+    port = 25565
+
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    server.bind((host, port))
+    server.listen(5)
+
+    try:
+        while True:
+            client_sock, addr = server.accept()
+            socks.append((client_sock, addr))
+    except KeyboardInterrupt:
+        print("shutting down server")
+    finally:
+        server.close()
+
+
+if __name__ == "__main__":
+    main()
