@@ -33,9 +33,9 @@ namespace Command {
 };
 
 namespace Telemetry {
-    typedef struct __attribute__((packed)) {
-        uint8_t sensor_id;
+    typedef struct {
         uint64_t timestamp; // in microseconds
         uint64_t data;
+        uint8_t sensor_id;
     } SensorPacket_t;
 };

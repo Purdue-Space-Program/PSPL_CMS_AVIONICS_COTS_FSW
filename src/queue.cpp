@@ -2,61 +2,33 @@
 #include "protocols.hpp"
 #include <queue.hpp>
 
-extern "C" {
-#include <semaphore.h>
-}
-
 using namespace Telemetry;
 
-Queue::Queue() : size(Telemetry::DATA_QUEUE_LENGTH), front(0), back(0), count(0) {
-    sem_init(&sema, 0, 0);
+Queue::Queue() {
+    sem_init(&sem_empty, 0, Telemetry::DATA_QUEUE_LENGTH);
+    sem_init(&sem_full, 0, 0);
+    head = 0;
+    tail = 0;
 }
 
 void Queue::enqueue(SensorPacket_t value) {
-    if (count == size) {
-        // queue is full
-        return;
-    }
+    sem_wait(&sem_empty);
 
-    q_mut.lock();
+    mut.lock();
+    arr[tail++] = value;
+    tail %= Telemetry::DATA_QUEUE_LENGTH;
+    mut.unlock();
 
-    arr[back] = value;
-    back = (back + 1) % size;
-    count += 1;
-
-    if (count == size) {
-        sem_post(&sema);
-    }
-
-    q_mut.unlock();
+    sem_post(&sem_full);
 }
 
-int Queue::dequeue(SensorPacket_t* packet) {
-    if (count == 0) {
-        // empty
-        return -1;
-    } 
-    else if (count == size) {
-        sem_wait(&sema);
-    }
+void Queue::dequeue(SensorPacket_t* packet) {
+    sem_wait(&sem_full);
 
-    q_mut.lock();
+    mut.lock();
+    *packet = arr[head++];
+    head %= Telemetry::DATA_QUEUE_LENGTH;
+    mut.unlock();
 
-    SensorPacket_t value = arr[front];
-    front = (front + 1) % size;
-    count -= 1;
-
-    q_mut.unlock();
-
-    *packet = value;
-
-    return 0;
-}
-
-bool Queue::is_empty() {
-    return count == 0;
-}
-
-uint32_t Queue::get_size() {
-    return count;
+    sem_post(&sem_empty);
 }

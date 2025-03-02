@@ -2,23 +2,24 @@
 
 #include "config.hpp"
 #include <mutex>
-#include <semaphore.h>
 #include <protocols.hpp>
+extern "C" {
+#include <semaphore.h>
+}
 
 class Queue {
 private:
     Telemetry::SensorPacket_t arr[Telemetry::DATA_QUEUE_LENGTH] = {0};
-    uint32_t size;
-    uint32_t front;
-    uint32_t back;
-    uint32_t count;
-    sem_t sema;
-    std::mutex q_mut;
+
+    size_t head;
+    size_t tail;
+
+    sem_t sem_empty;
+    sem_t sem_full;
+    std::mutex mut;
 
 public:
     Queue();
     void enqueue(Telemetry::SensorPacket_t value);
-    int dequeue(Telemetry::SensorPacket_t* packet);
-    bool is_empty();
-    uint32_t get_size();
+    void dequeue(Telemetry::SensorPacket_t* packet);
 };
