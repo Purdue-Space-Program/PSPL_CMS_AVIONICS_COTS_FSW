@@ -3,6 +3,7 @@
 #include "state.hpp"
 
 extern "C" {
+#include "hwif.h"
 #include "ads1263.h"
 #include <pthread.h>
 #include <stdbool.h>
