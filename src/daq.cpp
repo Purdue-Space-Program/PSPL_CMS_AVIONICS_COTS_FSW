@@ -28,6 +28,19 @@ void* daq(void* arg) {
     pthread_setschedparam(pthread_self(), SCHED_RR, &param);
     // TODO: FDIR
 
+    pspl_gpio_init();
+    pspl_spi_init();
+
+    ADS1263_SetMode(1); // single ended, need to change it per channel though
+    if (ADS1263_init_ADC1(ADS1263_DRATE::ADS1263_4800SPS) == 1) {
+        return NULL;
+    }
+
+    // PT channels
+    ADS1263_SetDiffChannal(0); // AI0-1
+    ADS1263_SetDiffChannal(1); // AI2-3
+    ADS1263_SetDiffChannal(2); // AI4-5
+
     while (true) {
         struct timespec time;
         clock_gettime(CLOCK_MONOTONIC, &time);
@@ -50,7 +63,7 @@ void* daq(void* arg) {
 
             // Enqueue data
             Telemetry::data_queue.enqueue({
-                .timestamp = timestamp.tv_sec * 1000000UL + timestamp.tv_nsec / 1000UL, // Convert ns -> us
+                .timestamp = timestamp.tv_sec * 1000000UL + timestamp.tv_nsec / 1000UL, // us
                 .data = data_value,
                 .sensor_id = ch,
             });

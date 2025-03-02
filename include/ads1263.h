@@ -189,6 +189,7 @@ void     ADS1263_DAC(ADS1263_DAC_VOLT volt, uint8_t isPositive, uint8_t isClose)
 void     ADS1263_ConfigADC1(ADS1263_GAIN gain, ADS1263_DRATE drate, ADS1263_DELAY delay);
 void     ADS1263_WriteCmd(uint8_t Cmd);
 uint8_t  ADS1263_Read_data(uint8_t Reg);
+void     ADS1263_SetDiffChannal(uint8_t Channal);
 
 #ifdef __cplusplus
 }
