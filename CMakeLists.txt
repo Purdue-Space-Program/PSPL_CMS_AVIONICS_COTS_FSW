@@ -10,7 +10,7 @@ add_executable(fsw
     src/command_handler.cpp
     src/daq.cpp
     src/hwif.cpp
-    src/main.cc
+    src/main.cpp
     src/queue.cpp
     src/telemetry_writer.cpp
 )
