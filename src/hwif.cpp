@@ -5,8 +5,10 @@
 #include <stdio.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
-
 #include <gpiod.h>
+
+#include <config.hpp>
+
 
 #pragma region GPIO
 
@@ -92,14 +94,13 @@ static int            fd_spi    = -1;
 static const uint32_t SPI_SPEED = 1000000;
 
 void pspl_spi_init(void) {
-  static const char *device = "/dev/spidev0.0";
-  int                fd     = open(device, O_RDWR);
+  int fd = open(Daq::SPI_DEVICE, O_RDWR);
   if (fd < 0) {
     perror("open");
     exit(EXIT_FAILURE);
   }
 
-  uint8_t mode = SPI_MODE_1;
+  uint8_t mode = Daq::SPI_MODE;
   if (ioctl(fd, SPI_IOC_WR_MODE, &mode) < 0) {
     perror("ioctl");
     exit(EXIT_FAILURE);
@@ -111,7 +112,7 @@ void pspl_spi_init(void) {
     exit(EXIT_FAILURE);
   }
 
-  uint8_t bits_per_word = 8;
+  uint8_t bits_per_word = Daq::SPI_BITS_PER_WORD;
   if (ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word) < 0) {
     perror("ioctl");
     exit(EXIT_FAILURE);
@@ -126,13 +127,13 @@ void pspl_spi_init(void) {
   fd_spi = fd;
 }
 
-void pspl_spi_xfer(void *tx, void *rx, size_t len) {
+void pspl_spi_xfer(void *tx, void *rx, uint32_t len) {
   struct spi_ioc_transfer tr = {
       .tx_buf = (uintptr_t)tx,
       .rx_buf = (uintptr_t)rx,
 
       .len = len,
-      0,
+      .delay_usecs = 0,
   };
 
   if (ioctl(fd_spi, SPI_IOC_MESSAGE(1), &tr) < 0) {

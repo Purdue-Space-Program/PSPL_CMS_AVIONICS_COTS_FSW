@@ -9,7 +9,7 @@ add_executable(fsw
     src/bang_bang_controller.cpp
     src/command_handler.cpp
     src/daq.cpp
-    src/hwif.c
+    src/hwif.cpp
     src/main.cc
     src/queue.cpp
     src/telemetry_writer.cpp
@@ -19,7 +19,8 @@ target_include_directories(fsw PRIVATE include)
 target_link_libraries(fsw gpiod)
 
 add_compile_options(fsw
-    -O3
+    -g
+    -fsanitize=address,undefined,thread,integer,leak,alignment
 )
 
 install(TARGETS fsw DESTINATION bin)
