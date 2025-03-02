@@ -1,7 +1,9 @@
-#include <pthread.h>
-
 #include <config.hpp>
 #include <state.hpp>
+
+extern "C" {
+#include <pthread.h>
+}
 
 int main() {
     void* (*funcs[])(void*) = { daq, command_handler, bang_bang_controller, telemetry_writer };

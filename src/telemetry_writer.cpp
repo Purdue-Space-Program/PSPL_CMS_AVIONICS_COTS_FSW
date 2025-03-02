@@ -1,4 +1,9 @@
 #include "protocols.hpp"
+#include <config.hpp>
+#include <state.hpp>
+#include <queue.hpp>
+
+extern "C" {
 #include <time.h>
 #include <sched.h>
 #include <stdbool.h>
@@ -6,10 +11,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
-
-#include <config.hpp>
-#include <state.hpp>
-#include <queue.hpp>
+}
 
 void* telemetry_writer(void* arg) {
     struct sched_param param;
@@ -34,7 +36,7 @@ void* telemetry_writer(void* arg) {
         struct timespec time;
         clock_gettime(CLOCK_MONOTONIC, &time);
         // TODO: FDIR
-        time.tv_nsec += Telemetry::POLL_RATE_MS * 1000000; // sleep for 100us
+        time.tv_nsec += Telemetry::TICK_RATE_MS * 1000000; // sleep for 100us
         if (time.tv_nsec >= 1000000000) {
             time.tv_sec += 1;
             time.tv_nsec -= 1000000000;

@@ -1,9 +1,11 @@
 #include <cstdio>
+extern "C" {
 #include <stdbool.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <arpa/inet.h>
 #include <stdio.h>
+}
 
 #include <protocols.hpp>
 #include <config.hpp>

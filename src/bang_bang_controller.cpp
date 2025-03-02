@@ -1,9 +1,11 @@
+#include "config.hpp"
+#include "state.hpp"
+
+extern "C" {
 #include <gpiod.h>
 #include <unistd.h>
 #include <stdbool.h>
-
-#include "config.hpp"
-#include "state.hpp"
+}
 
 using namespace BB_State;
 

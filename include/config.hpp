@@ -1,5 +1,4 @@
-#ifndef __CONFIG_HPP__
-#define __CONFIG_HPP__
+#pragma once
 
 #include <linux/spi/spi.h>
 #include <stdint.h>
@@ -64,5 +63,3 @@ void* daq(void* arg);
 void* bang_bang_controller(void* arg);
 void* command_handler(void* arg);
 void* telemetry_writer(void* arg);
-
-#endif

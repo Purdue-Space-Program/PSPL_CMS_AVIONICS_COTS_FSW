@@ -1,5 +1,4 @@
-#ifndef __STATE_HPP__
-#define __STATE_HPP__
+#pragma once
 
 #include <stdint.h>
 
@@ -37,5 +36,3 @@ namespace Telemetry {
     extern uint64_t tc_0;
     extern uint64_t tc_1;
 }
-
-#endif

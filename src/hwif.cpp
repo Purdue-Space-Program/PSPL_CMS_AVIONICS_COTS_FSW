@@ -1,3 +1,6 @@
+#include <config.hpp>
+
+extern "C" {
 #include "hwif.h"
 
 #include <fcntl.h>
@@ -6,9 +9,6 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <gpiod.h>
-
-#include <config.hpp>
-
 
 #pragma region GPIO
 
@@ -155,4 +155,6 @@ int usleep(__useconds_t usec);
 void DEV_Delay_ms(uint32_t ms) {
   uint64_t us = (uint64_t)ms * 1000;
   usleep(us);
+}
+
 }

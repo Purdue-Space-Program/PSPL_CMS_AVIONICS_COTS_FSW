@@ -1,3 +1,9 @@
+#include "config.hpp"
+#include "queue.hpp"
+#include "state.hpp"
+
+extern "C" {
+#include "ads1263.h"
 #include <pthread.h>
 #include <stdbool.h>
 #include <unistd.h>
@@ -6,11 +12,7 @@
 #include <time.h>
 #include <string.h>
 #include <stdint.h>
-
-#include "config.hpp"
-#include "queue.hpp"
-#include "state.hpp"
-#include "ads1263.h"
+}
 
 uint64_t Telemetry::he_pressure = 0;
 uint64_t Telemetry::fu_pressure = 0;

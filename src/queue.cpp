@@ -1,8 +1,10 @@
-
 #include "config.hpp"
 #include "protocols.hpp"
 #include <queue.hpp>
+
+extern "C" {
 #include <semaphore.h>
+}
 
 using namespace Telemetry;
 

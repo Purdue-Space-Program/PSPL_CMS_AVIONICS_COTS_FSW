@@ -1,5 +1,4 @@
-#ifndef __QUEUE_HPP__
-#define __QUEUE_HPP__
+#pragma once
 
 #include "config.hpp"
 #include <mutex>
@@ -23,5 +22,3 @@ public:
     bool is_empty();
     uint32_t get_size();
 };
-
-#endif

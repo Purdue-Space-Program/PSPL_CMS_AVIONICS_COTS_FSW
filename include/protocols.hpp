@@ -1,5 +1,4 @@
-#ifndef __PACKET_DEFINITIONS_HPP_
-#define __PACKET_DEFINITIONS_HPP_
+#pragma once
 
 #include <stdint.h>
 
@@ -40,5 +39,3 @@ namespace Telemetry {
         uint64_t data;
     } SensorPacket_t;
 };
-
-#endif
