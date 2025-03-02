@@ -19,6 +19,8 @@ namespace BB_State {
 
     extern State bb_fu_state;
     extern State bb_ox_state;
+    extern int   bb_fu_pos;
+    extern int   bb_ox_pos;
     
     extern uint64_t bb_fu_upper_setp;
     extern uint64_t bb_fu_lower_setp;
