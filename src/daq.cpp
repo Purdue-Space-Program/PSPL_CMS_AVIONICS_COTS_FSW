@@ -50,9 +50,9 @@ void* daq(void* arg) {
 
             // Enqueue data
             Telemetry::data_queue.enqueue({
-                .sensor_id = ch,
                 .timestamp = timestamp.tv_sec * 1000000UL + timestamp.tv_nsec / 1000UL, // Convert ns -> us
                 .data = data_value,
+                .sensor_id = ch,
             });
         }
 
