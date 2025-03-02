@@ -15,6 +15,10 @@ extern "C" {
 #include <stdint.h>
 }
 
+#include <thread>
+
+using namespace std::chrono;
+
 uint64_t Telemetry::he_pressure = 0;
 uint64_t Telemetry::fu_pressure = 0;
 uint64_t Telemetry::ox_pressure = 0;
@@ -43,14 +47,7 @@ void* daq(void* arg) {
     ADS1263_SetDiffChannal(2); // AI4-5
 
     while (true) {
-        struct timespec time;
-        clock_gettime(CLOCK_MONOTONIC, &time);
-        // TODO: FDIR
-        time.tv_nsec += Telemetry::TICK_RATE_MS * 1000000;
-        if (time.tv_nsec >= 1000000000) {
-            time.tv_sec += 1;
-            time.tv_nsec -= 1000000000;
-        }
+        auto now = time_point_cast<microseconds>(steady_clock::now());
 
         for (uint8_t ch = Telemetry::AI_CHANNEL_START; ch < Telemetry::NUM_AI_CHANNELS; ch += 1) {
             struct timespec timestamp;
@@ -70,7 +67,6 @@ void* daq(void* arg) {
             });
         }
 
-        clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &time, NULL);
-        // TODO: FDIR
+        std::this_thread::sleep_until(now + std::chrono::milliseconds(Telemetry::TICK_RATE_MS));
     }
 }
