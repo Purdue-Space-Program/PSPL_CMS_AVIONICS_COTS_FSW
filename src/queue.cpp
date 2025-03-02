@@ -22,7 +22,7 @@ void Queue::enqueue(SensorPacket_t value) {
     back = (back + 1) % size;
     count += 1;
 
-    if (count == DATA_QUEUE_LENGTH) {
+    if (count == size) {
         sem_post(&sema);
     }
 
@@ -33,7 +33,8 @@ int Queue::dequeue(SensorPacket_t* packet) {
     if (count == 0) {
         // empty
         return -1;
-    } else if (count == DATA_QUEUE_LENGTH) {
+    } 
+    else if (count == size) {
         sem_wait(&sema);
     }
 
