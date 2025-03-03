@@ -160,7 +160,11 @@ void* command_handler(void* arg) {
                     break;
                 }
                 case Command::Commands::START: {
-                    std::cout << "Start command received at " << time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()).time_since_epoch() << std::endl;
+                    std::cout << "START command received at " << time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()).time_since_epoch() << std::endl;
+                    break;
+                }
+                case Command::Commands::ABORT: {
+                    std::cout << "ABORT command received at " << time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()).time_since_epoch() << std::endl;
                     break;
                 }
             }
