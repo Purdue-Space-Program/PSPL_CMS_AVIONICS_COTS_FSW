@@ -1,4 +1,7 @@
 #include <cstdio>
+#include <chrono>
+#include <iostream>
+
 extern "C" {
 #include <stdbool.h>
 #include <unistd.h>
@@ -179,6 +182,10 @@ void* command_handler(void* arg) {
                 }
                 case Command::Commands::NOOP: {
                     puts("this is not an operation");
+                    break;
+                }
+                case Command::Commands::START: {
+                    std::cout << "Start command received at " << time_point_cast<std::chrono::microseconds>(std::chrono::steady_clock::now()).time_since_epoch() << std::endl;
                     break;
                 }
             }

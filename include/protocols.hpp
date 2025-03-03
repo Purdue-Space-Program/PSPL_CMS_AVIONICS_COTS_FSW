@@ -17,7 +17,8 @@ namespace Command {
         SET_BB_STATE_REGULATE = 10,
         SET_BB_STATE_ISOLATE  = 11,
         SET_BB_STATE_OPEN     = 12,
-        NOOP = 13,
+        NOOP  = 13,
+        START = 14,
     };
 
     enum class Status : uint8_t {
