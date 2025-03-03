@@ -3,11 +3,15 @@
 
 extern "C" {
 #include <pthread.h>
+#include <semaphore.h>
 }
+
+sem_t start_sem;
 
 int main() {
     void* (*funcs[])(void*) = { daq, command_handler, bang_bang_controller, data_writer };
     pthread_t threads[4] = {0};
+    sem_init(&start_sem, 0, 0);
 
     for (size_t i = 0; i < 4; i += 1) {
         pthread_create(threads + i, NULL, funcs[i], NULL);

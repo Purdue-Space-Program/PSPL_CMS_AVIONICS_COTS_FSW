@@ -25,6 +25,7 @@ uint64_t BB_State::bb_ox_upper_setp = 310 * 1000000;
 uint64_t BB_State::bb_ox_lower_setp = 305 * 1000000;
 
 void* bang_bang_controller(void* arg) {
+    sem_wait(&start_sem);
     struct sched_param param;
     param.sched_priority = 99; // highest prio
     pthread_setschedparam(pthread_self(), SCHED_RR, &param);

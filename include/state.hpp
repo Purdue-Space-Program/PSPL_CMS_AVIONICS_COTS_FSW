@@ -39,3 +39,6 @@ namespace Telemetry {
     extern uint64_t tc_0;
     extern uint64_t tc_1;
 }
+
+
+extern sem_t start_sem;

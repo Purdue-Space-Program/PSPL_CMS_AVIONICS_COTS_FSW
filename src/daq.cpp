@@ -47,6 +47,8 @@ void* daq(void* arg) {
     ADS1263_SetDiffChannal(1); // AI2-3
     ADS1263_SetDiffChannal(2); // AI4-5
 
+    sem_post(&start_sem);
+
     while (true) {
         auto now = time_point_cast<microseconds>(steady_clock::now());
 

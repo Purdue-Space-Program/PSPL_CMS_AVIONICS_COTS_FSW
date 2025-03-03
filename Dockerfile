@@ -14,3 +14,4 @@ RUN apt-get install -y bear
 RUN apt-get install -y clangd
 RUN apt-get install -y ripgrep
 RUN apt-get install -y libboost-all-dev
+RUN apt-get install -y clang

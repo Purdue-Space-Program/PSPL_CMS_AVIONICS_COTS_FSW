@@ -24,9 +24,13 @@ if (BUILD_SITL)
 
     target_include_directories(fsw_sitl PRIVATE include)
 
-    add_compile_options(fsw_sitl
+    target_compile_options(fsw_sitl PRIVATE
         -g
-        -fsanitize=address,undefined,thread,integer,leak,alignment
+        -O2
+        -fsanitize=address,undefined,leak,alignment
+    )
+    target_link_options(fsw_sitl PRIVATE
+        -fsanitize=address,undefined,leak,alignment
     )
 else()
     add_executable(fsw 
@@ -44,9 +48,13 @@ else()
     target_include_directories(fsw PRIVATE include)
     target_link_libraries(fsw gpiod)
 
-    add_compile_options(fsw
+    target_compile_options(fsw PRIVATE
         -g
-        -fsanitize=address,undefined,thread,integer,leak,alignment
+        -O2
+        -fsanitize=address,undefined,leak,alignment
+    )
+    target_link_options(fsw_sitl PRIVATE
+        -fsanitize=address,undefined,leak,alignment
     )
 
     install(TARGETS fsw DESTINATION bin)

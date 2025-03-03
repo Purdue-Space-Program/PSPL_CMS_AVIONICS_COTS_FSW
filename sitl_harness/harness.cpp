@@ -91,10 +91,7 @@ double real_t0;
 double file_t0;
 
 extern "C" {
-void pspl_gpio_init(void) {}
-void pspl_spi_init(void) {}
-
-uint8_t ADS1263_init_ADC1(ADS1263_DRATE rate) {
+void pspl_gpio_init(void) {
     BB_State::bb_fu_state = BB_State::State::REGULATE;
     BB_State::bb_ox_state = BB_State::State::REGULATE;
 
@@ -113,7 +110,10 @@ uint8_t ADS1263_init_ADC1(ADS1263_DRATE rate) {
     std::getline(data_file, curr_line);
     file_t0 = file_time();
     real_t0 = get_time();
+}
+void pspl_spi_init(void) {}
 
+uint8_t ADS1263_init_ADC1(ADS1263_DRATE rate) {
     return 0;
 }
 
