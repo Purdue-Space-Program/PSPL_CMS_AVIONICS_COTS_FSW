@@ -3,3 +3,6 @@
 build
 compile_commands.json
 sitl_out.csv
+
+.venv/
+__pycache__/
