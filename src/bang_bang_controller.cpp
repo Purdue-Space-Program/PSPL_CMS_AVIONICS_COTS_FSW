@@ -1,5 +1,6 @@
 #include "config.hpp"
 #include "state.hpp"
+#include "gpio.hpp"
 
 extern "C" {
 #include <gpiod.h>
@@ -29,37 +30,14 @@ void* bang_bang_controller(void* arg) {
     pthread_setschedparam(pthread_self(), SCHED_RR, &param);
     // TODO: FDIR
 
-    struct gpiod_chip *bb_chip;
-    struct gpiod_line *bb_fu_line;
-    struct gpiod_line *bb_ox_line;
-
-    bb_chip = gpiod_chip_open_by_name(BB_Constants::BB_GPIO_CHIP_NAME);
-    if (!bb_chip) {
-        // TODO: FDIR
-    }
-
-    bb_fu_line = gpiod_chip_get_line(bb_chip, BB_Constants::BB_FU_GPIO_PIN);
-    if (!bb_fu_line) {
-        // TODO: FDIR
-    }
-    if (gpiod_line_request_output(bb_fu_line, "test_fu?", BB_Constants::BB_CLOSE) < 0) {
-        // TODO: FDIR
-    }
-
-    bb_ox_line = gpiod_chip_get_line(bb_chip, BB_Constants::BB_OX_GPIO_PIN);
-    if (!bb_ox_line) {
-        // TODO: FDIR
-    }
-    if (gpiod_line_request_output(bb_ox_line, "test_ox?", BB_Constants::BB_CLOSE) < 0) {
-        // TODO: FDIR
-    }
+    fsw_gpio_init();
 
     auto fu_last_set = std::chrono::steady_clock::now();
     auto ox_last_set = fu_last_set;
 
     int intended_fu_pos = BB_Constants::BB_CLOSE;
     int intended_ox_pos = BB_Constants::BB_CLOSE;
-    
+
     while (true) {
         auto now = time_point_cast<microseconds>(steady_clock::now());
 
@@ -118,18 +96,16 @@ void* bang_bang_controller(void* arg) {
             ox_last_set = now;
         }
 
-        if (gpiod_line_set_value(bb_fu_line, bb_ox_pos) < 0) {
+        if (fsw_gpio_set_fu(bb_fu_pos) < 0) {
             // TODO: FDIR
         }
-        if (gpiod_line_set_value(bb_ox_line, bb_fu_pos) < 0) {
+        if (fsw_gpio_set_ox(bb_ox_pos) < 0) {
             // TODO: FDIR
         }
         std::this_thread::sleep_until(now + std::chrono::milliseconds(BB_Constants::TICK_RATE_MS));
     }
 
-    gpiod_line_release(bb_fu_line);
-    gpiod_line_release(bb_ox_line);
-    gpiod_chip_close(bb_chip);
-
+    fsw_gpio_cleanup();
+    return NULL;
 }
 

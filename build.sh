@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cmake -B build -G Ninja
+cmake -B build $@ -G Ninja
 cmake --build build

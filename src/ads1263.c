@@ -32,6 +32,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+static uint8_t DEV_SPI_WriteByte(uint8_t byte) {
+  uint8_t rx = 0;
+  pspl_spi_xfer(&byte, &rx, 1);
+  return rx;
+}
+
+static uint8_t DEV_SPI_ReadByte(void) { return DEV_SPI_WriteByte(0); }
+
 uint8_t ScanMode = 0;
 
 /******************************************************************************
