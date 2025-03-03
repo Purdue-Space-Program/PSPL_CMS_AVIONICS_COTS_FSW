@@ -6,16 +6,18 @@ SANITIZE ?= 0
 CC = gcc
 CXX = g++
 
-IGNORED_WARNINGS = -Wno-unused-function -Wno-unknown-pragmas -Wno-unused-const-variable
-CFLAGS = -Wall $(IGNORED_WARNINGS) -std=c11 -O2 -flto -Iinclude/ -ggdb
-CXXFLAGS = -Wall $(IGNORED_WARNINGS) -std=c++20 -O2 -flto -Iinclude/ -ggdb
+BOTH_FLAGS = -Wall -Wno-unused-function -Wno-unknown-pragmas -Wno-unused-const-variable -O2 -flto -Iinclude/ -ggdb
 LDFLAGS = -flto -ggdb
 
 ifeq ($(SANITIZE), 1)
-  CFLAGS += -fsanitize=address,undefined,leak -fno-omit-frame-pointer -g
-  CXXFLAGS += -fsanitize=address,undefined,leak -fno-omit-frame-pointer -g
-  LDFLAGS += -fsanitize=address,undefined,leak -g
+  BOTH_FLAGS += -fsanitize=address,undefined,leak -fno-omit-frame-pointer
+  LDFLAGS += -fsanitize=address,undefined,leak
+#   BOTH_FLAGS += -fsanitize=thread -fno-omit-frame-pointer
+#   LDFLAGS += -fsanitize=thread
 endif
+
+CFLAGS = $(BOTH_FLAGS) -std=c11
+CXXFLAGS = $(BOTH_FLAGS) -std=c++20
 
 OBJS = bin/bang_bang_controller.o bin/command_handler.o bin/daq.o bin/data_writer.o bin/main.o bin/queue.o
 FULL_OBJS = $(OBJS) bin/ads1263.o bin/hwif.o bin/gpio.o
