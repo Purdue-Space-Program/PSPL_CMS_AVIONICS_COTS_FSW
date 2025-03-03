@@ -37,6 +37,6 @@ namespace Telemetry {
     typedef struct {
         uint64_t timestamp; // in microseconds
         uint64_t data;
-        uint8_t sensor_id;
+        uint64_t sensor_id;
     } SensorPacket_t;
 };
