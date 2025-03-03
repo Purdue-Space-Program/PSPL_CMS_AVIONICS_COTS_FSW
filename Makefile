@@ -15,8 +15,8 @@ ifeq ($(SANITIZE), 1)
   LDFLAGS += -fsanitize=address,undefined,leak
 endif
 
-CFLAGS = $(BOTH_FLAGS) -std=c11
-CXXFLAGS = $(BOTH_FLAGS) -std=c++20
+CFLAGS += $(BOTH_FLAGS) -std=c11
+CXXFLAGS += $(BOTH_FLAGS) -std=c++20
 
 OBJS = bin/bang_bang_controller.o bin/command_handler.o bin/daq.o bin/data_writer.o bin/main.o bin/queue.o
 FULL_OBJS = $(OBJS) bin/ads1263.o bin/hwif.o bin/gpio.o
