@@ -1,8 +1,12 @@
-#include "ads1263.h"
 #include "config.hpp"
+#include "state.hpp"
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
+
+extern "C" {
+#include "ads1263.h"
+}
 
 #include <ctime>
 #include <fstream>
@@ -91,6 +95,9 @@ void pspl_gpio_init(void) {}
 void pspl_spi_init(void) {}
 
 uint8_t ADS1263_init_ADC1(ADS1263_DRATE rate) {
+    BB_State::bb_fu_state = BB_State::State::REGULATE;
+    BB_State::bb_ox_state = BB_State::State::REGULATE;
+
     // load the data file
     data_file.open("sitl_data/sensornet_data_delta_cf_2_out_cut.csv");
     if (!data_file.is_open()) {
@@ -143,5 +150,5 @@ void ADS1263_SetMode(uint8_t Mode) {}
 void fsw_gpio_init() {}
 void fsw_gpio_cleanup() {}
 
-void fsw_gpio_set_fu(int value) {}
-void fsw_gpio_set_ox(int value) {}
+void fsw_gpio_set_fu(int value) { std::cout << "FU: " << value << std::endl; }
+void fsw_gpio_set_ox(int value) { std::cout << "OX: " << value << std::endl; }
