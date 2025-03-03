@@ -8,7 +8,7 @@ from struct import unpack, calcsize
 #    host="128.46.118.59", port=9090, username="Bill", password="Bill", secure=False
 # )
 
-TELEM_FORMAT = '<QQB'
+TELEM_FORMAT = '<QQB7x'
 TELEM_SIZE   = calcsize(TELEM_FORMAT)
 
 if __name__ == '__main__':
@@ -25,6 +25,7 @@ if __name__ == '__main__':
             packet = s.recv(TELEM_SIZE)
             deser_packet = unpack(TELEM_FORMAT, packet)
             
-            if deser_packet[2] == 2:
-                print((((deser_packet[2]/float(2**31)) * 5) * 0.958241 + 0.0146882) * 500)
-                # print(deser_packet)
+            # if deser_packet[2] == 2:
+            #     print((((deser_packet[2]/float(2**31)) * 5) * 0.958241 + 0.0146882) * 500)
+            #     # print(deser_packet)
+            print(deser_packet)

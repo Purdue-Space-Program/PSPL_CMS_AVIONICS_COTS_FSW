@@ -5,7 +5,7 @@ import struct
 import socket
 import threading
 
-packet_struct = struct.Struct("<QQB")
+packet_struct = struct.Struct("<QQB7x")
 packet_size = packet_struct.size
 socks = []
 
@@ -13,6 +13,7 @@ socks = []
 def telem_file_reader():
     global socks
     f = open("/var/lib/pspl_fsw/latest.bin", "rb")
+    f.seek(0)
     packets = []
     backlog = b""
 
@@ -32,10 +33,10 @@ def telem_file_reader():
             for sock, addr in socks:
                 try:
                     sock.sendall(packet)
-                except ConnectionResetError:
+                except:
                     print(f"address {addr} disconnected")
                     sock.close()
-                    socks.remove(sock)
+                    socks.remove((sock,addr))
 
 
 def main():
