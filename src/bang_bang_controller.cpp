@@ -118,10 +118,10 @@ void* bang_bang_controller(void* arg) {
             ox_last_set = now;
         }
 
-        if (gpiod_line_set_value(bb_fu_line, intended_fu_pos) < 0) {
+        if (gpiod_line_set_value(bb_fu_line, bb_ox_pos) < 0) {
             // TODO: FDIR
         }
-        if (gpiod_line_set_value(bb_ox_line, intended_ox_pos) < 0) {
+        if (gpiod_line_set_value(bb_ox_line, bb_fu_pos) < 0) {
             // TODO: FDIR
         }
         std::this_thread::sleep_until(now + std::chrono::milliseconds(BB_Constants::TICK_RATE_MS));
