@@ -19,6 +19,7 @@ if (BUILD_SITL)
         src/main.cpp
         src/queue.cpp
         src/data_writer.cpp
+        sitl_harness/harness.cpp
     )
 
     target_include_directories(fsw_sitl PRIVATE include)

@@ -67,6 +67,6 @@ void* daq(void* arg) {
             });
         }
 
-        std::this_thread::sleep_until(now + std::chrono::milliseconds(Telemetry::TICK_RATE_MS));
+        // std::this_thread::sleep_until(now + std::chrono::milliseconds(Telemetry::TICK_RATE_MS));
     }
 }
