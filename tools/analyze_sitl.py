@@ -30,9 +30,37 @@ print(test_data)
 │ 0.016001   ┆ 24.850744 ┆ 22.32459   ┆ true           ┆ true             │
 """
 
+def analyze_state_changes(df):
+    times = df["ts"].to_numpy()
+    values = df["value"].to_numpy()
+
+    last_state = values[0]
+    last_change_time = 0
+
+    min_change_time = float('inf')
+
+    for ts, val in zip(times, values):
+        if val != last_state:
+            change_time = (ts - last_change_time) * 1000
+            # print(change_time)
+
+            last_change_time = ts
+            last_state = val
+
+            min_change_time = min(min_change_time, change_time)
+
+    print(min_change_time)
+
 test_out = pl.read_csv("sitl_out.csv")
 fu_state = test_out.filter(pl.col("system") == "FU").drop("system")
 ox_state = test_out.filter(pl.col("system") == "OX").drop("system")
+
+print("analyze ox")
+analyze_state_changes(ox_state)
+print("analyze fu")
+analyze_state_changes(fu_state)
+
+exit()
 
 # Create figure
 fig, ax1 = plt.subplots(figsize=(12, 6))
