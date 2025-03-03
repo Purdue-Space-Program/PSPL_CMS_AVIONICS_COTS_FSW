@@ -50,7 +50,7 @@ void* daq(void* arg) {
     sem_post(&start_sem);
 
     while (true) {
-        // auto now = time_point_cast<microseconds>(steady_clock::now());
+        // auto now = time_point_cast<microseconds>(system_clock::now());
 
         for (uint8_t ch = Telemetry::AI_CHANNEL_START; ch < Telemetry::NUM_AI_CHANNELS; ch += 1) {
             struct timespec timestamp;

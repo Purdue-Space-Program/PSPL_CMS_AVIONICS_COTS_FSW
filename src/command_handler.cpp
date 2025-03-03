@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <chrono>
+#include <thread>
 #include <iostream>
 
 extern "C" {
@@ -13,6 +14,8 @@ extern "C" {
 #include <protocols.hpp>
 #include <config.hpp>
 #include <state.hpp>
+
+using namespace std::chrono;
 
 static int cmd_server_sock;
 static int cmd_client_sock;
@@ -56,14 +59,7 @@ void* command_handler(void* arg) {
     }
     
     while (true) {
-        struct timespec time;
-        clock_gettime(CLOCK_MONOTONIC, &time);
-        // TODO: FDIR
-        time.tv_nsec += Command::TICK_RATE_MS * 1000000;
-        if (time.tv_nsec >= 1000000000) {
-            time.tv_sec += 1;
-            time.tv_nsec -= 1000000000;
-        }
+        auto now = time_point_cast<microseconds>(system_clock::now());
 
         cmd_client_sock = accept(cmd_server_sock, (struct sockaddr *)&address, (socklen_t*)&addr_size);
         if (cmd_client_sock >= 0) {
@@ -185,7 +181,7 @@ void* command_handler(void* arg) {
                     break;
                 }
                 case Command::Commands::START: {
-                    std::cout << "Start command received at " << time_point_cast<std::chrono::microseconds>(std::chrono::steady_clock::now()).time_since_epoch() << std::endl;
+                    std::cout << "Start command received at " << time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()).time_since_epoch() << std::endl;
                     break;
                 }
             }
@@ -195,7 +191,6 @@ void* command_handler(void* arg) {
                 // TODO: FDIR
             }
         }
-        clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &time, NULL);
-        // TODO: FDIR
+        std::this_thread::sleep_until(now + std::chrono::milliseconds(BB_Constants::TICK_RATE_MS));
     }
 }

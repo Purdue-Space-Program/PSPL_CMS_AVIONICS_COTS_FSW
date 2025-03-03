@@ -33,14 +33,14 @@ void* bang_bang_controller(void* arg) {
 
     fsw_gpio_init();
 
-    auto fu_last_set = std::chrono::steady_clock::now();
+    auto fu_last_set = std::chrono::system_clock::now();
     auto ox_last_set = fu_last_set;
 
     int intended_fu_pos = BB_Constants::BB_CLOSE;
     int intended_ox_pos = BB_Constants::BB_CLOSE;
 
     while (true) {
-        auto now = time_point_cast<microseconds>(steady_clock::now());
+        auto now = time_point_cast<microseconds>(system_clock::now());
 
         Telemetry::state_mutex.lock();
         uint64_t curr_fu_pressure = Telemetry::fu_pressure;
