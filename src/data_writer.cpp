@@ -1,18 +1,17 @@
 #include "protocols.hpp"
+
 #include <cerrno>
 #include <config.hpp>
 #include <cstdio>
 #include <cstdlib>
 #include <queue.hpp>
 #include <state.hpp>
+
 extern "C" {
 #include <sys/stat.h>
 #include <unistd.h>
 }
 
-extern "C" {}
-
-static const char *DATA_FOLDER = "/var/lib/pspl_fsw/";
 
 void *data_writer(void *arg) {
     // get UNIX epoch in seconds
@@ -22,15 +21,14 @@ void *data_writer(void *arg) {
             .count();
 
     // create data folder if it doesn't exist
-    if (mkdir(DATA_FOLDER, 0777) == -1 && errno != EEXIST) {
+    if (mkdir(Telemetry::DATA_FOLDER, 0777) == -1 && errno != EEXIST) {
         perror("mkdir");
         exit(EXIT_FAILURE);
     }
 
     // create a file called data_<now_sec>.bin
     char filename[64];
-    snprintf(filename, sizeof(filename), "%sdata_%lu.bin", DATA_FOLDER,
-             now_sec);
+    snprintf(filename, sizeof(filename), "%sdata_%lu.bin", Telemetry::DATA_FOLDER, now_sec);
     FILE *file = fopen(filename, "wb");
     if (!file) {
         perror("fopen");
@@ -39,7 +37,7 @@ void *data_writer(void *arg) {
 
     // symlink latest.bin to the new file
     char symlink_path[64];
-    snprintf(symlink_path, sizeof(symlink_path), "%slatest.bin", DATA_FOLDER);
+    snprintf(symlink_path, sizeof(symlink_path), "%slatest.bin", Telemetry::DATA_FOLDER);
 
     // if link path exists, remove it
     if (unlink(symlink_path) == -1 && errno != ENOENT) {

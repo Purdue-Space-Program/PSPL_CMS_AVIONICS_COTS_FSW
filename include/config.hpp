@@ -43,7 +43,6 @@ namespace Daq {
 }
 
 namespace Telemetry {
-    constexpr const char* IP = "192.168.2.118";
     constexpr int PORT = 25565;
 
     constexpr uint32_t DATA_QUEUE_LENGTH = 1024;
@@ -57,6 +56,8 @@ namespace Telemetry {
     constexpr uint8_t NUM_AI_CHANNELS  = 10;
 
     constexpr uint8_t TICK_RATE_MS = 1;
+
+    constexpr const char* DATA_FOLDER = "/var/lib/pspl_fsw/";
 }
 
 void* daq(void* arg);
