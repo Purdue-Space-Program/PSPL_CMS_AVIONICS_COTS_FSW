@@ -32,8 +32,9 @@ def telem_file_reader():
             for sock, addr in socks:
                 try:
                     sock.sendall(packet)
-                except Exception:
+                except ConnectionResetError:
                     print(f"address {addr} disconnected")
+                    sock.close()
                     socks.remove(sock)
 
 
