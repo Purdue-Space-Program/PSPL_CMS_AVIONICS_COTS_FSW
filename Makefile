@@ -1,3 +1,4 @@
+PREFIX ?= /usr/local
 SANITIZE ?= 0
 
 # CC = clang
@@ -26,7 +27,7 @@ SITL_OBJS = $(OBJS) bin/harness.o
 # Create a proper set with no duplicates
 ALL_OBJS = $(sort $(FULL_OBJS) bin/harness.o)
 
-.PHONY: all sitl clean
+.PHONY: all sitl clean install
 
 all: bin/fsw
 sitl: bin/fsw_sitl
@@ -54,3 +55,8 @@ bin/harness.o: sitl_harness/harness.cpp | bin
 
 bin:
 	mkdir -p bin
+
+install: bin/fsw
+	mkdir -p $(PREFIX)/bin
+	install -Dm755 bin/fsw $(PREFIX)/bin/fsw
+	install -Dm755 tools/fsw_telemetry_server $(PREFIX)/bin/fsw_telemetry_server
