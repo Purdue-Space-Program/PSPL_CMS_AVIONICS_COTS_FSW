@@ -32,6 +32,7 @@ namespace BB_State {
 namespace Telemetry {
     extern Queue data_queue;
 
+    extern std::mutex state_mutex;
     extern uint64_t he_pressure;
     extern uint64_t fu_pressure;
     extern uint64_t ox_pressure;

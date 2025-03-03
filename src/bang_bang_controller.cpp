@@ -19,10 +19,10 @@ State BB_State::bb_ox_state = State::ISOLATE;
 int   BB_State::bb_fu_pos   = BB_Constants::BB_CLOSE;
 int   BB_State::bb_ox_pos   = BB_Constants::BB_CLOSE;
 
-uint64_t BB_State::bb_fu_upper_setp = UINT64_MAX;
-uint64_t BB_State::bb_fu_lower_setp = UINT64_MAX - 1;
-uint64_t BB_State::bb_ox_upper_setp = UINT64_MAX;
-uint64_t BB_State::bb_ox_lower_setp = UINT64_MAX - 1;
+uint64_t BB_State::bb_fu_upper_setp = 305 * 1000000;
+uint64_t BB_State::bb_fu_lower_setp = 295 * 1000000;
+uint64_t BB_State::bb_ox_upper_setp = 305 * 1000000;
+uint64_t BB_State::bb_ox_lower_setp = 295 * 1000000;
 
 void* bang_bang_controller(void* arg) {
     struct sched_param param;
@@ -41,8 +41,11 @@ void* bang_bang_controller(void* arg) {
     while (true) {
         auto now = time_point_cast<microseconds>(steady_clock::now());
 
+        Telemetry::state_mutex.lock();
         int curr_fu_pressure = Telemetry::fu_pressure;
         int curr_ox_pressure = Telemetry::ox_pressure;
+        Telemetry::state_mutex.unlock();
+
         State curr_fu_state  = bb_fu_state;
         State curr_ox_state  = bb_ox_state;
 

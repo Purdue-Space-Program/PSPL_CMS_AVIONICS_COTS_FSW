@@ -19,6 +19,7 @@ extern "C" {
 
 using namespace std::chrono;
 
+std::mutex Telemetry::state_mutex;
 uint64_t Telemetry::he_pressure = 0;
 uint64_t Telemetry::fu_pressure = 0;
 uint64_t Telemetry::ox_pressure = 0;
@@ -65,6 +66,21 @@ void* daq(void* arg) {
                 .data = data_value,
                 .sensor_id = ch,
             });
+
+            // set bang bang loop state
+            if (ch == Telemetry::CHANNEL_PT_FU) {
+                Telemetry::state_mutex.lock();
+                Telemetry::fu_pressure = value;
+                Telemetry::state_mutex.unlock();
+            } else if (ch == Telemetry::CHANNEL_PT_OX) {
+                Telemetry::state_mutex.lock();
+                Telemetry::ox_pressure = value;
+                Telemetry::state_mutex.unlock();
+            } else if (ch == Telemetry::CHANNEL_PT_HE) {
+                Telemetry::state_mutex.lock();
+                Telemetry::he_pressure = value;
+                Telemetry::state_mutex.unlock();
+            }
         }
 
         // std::this_thread::sleep_until(now + std::chrono::milliseconds(Telemetry::TICK_RATE_MS));
