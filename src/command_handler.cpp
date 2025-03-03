@@ -43,35 +43,14 @@ void* command_handler(void* arg) {
         // TODO: FDIR
     }
 
-    if (listen(cmd_server_sock, 2) < 0) {
+    if (listen(cmd_server_sock, 5) < 0) {
         close(cmd_server_sock);
-        // TODO: FDIR
-    }
-
-    int flags = fcntl(cmd_server_sock, F_GETFL, 0);  // Get current flags
-    if (flags == -1) {
-        // TODO: FDIR
-    }
-
-    flags |= O_NONBLOCK;  // Add the O_NONBLOCK flag
-    if (fcntl(cmd_server_sock, F_SETFL, flags) == -1) {
         // TODO: FDIR
     }
     
     while (true) {
-        auto now = time_point_cast<microseconds>(system_clock::now());
-
         cmd_client_sock = accept(cmd_server_sock, (struct sockaddr *)&address, (socklen_t*)&addr_size);
         if (cmd_client_sock >= 0) {
-            struct timeval timeout;
-            timeout.tv_sec = 0;
-            timeout.tv_usec = Command::SOCK_TIMEOUT_MS * 1000;
-            if (setsockopt(cmd_client_sock, SOL_SOCKET, SO_RCVTIMEO, &timeout, sizeof(timeout)) < 0) {
-                // TODO: FDIR
-                close(cmd_client_sock);
-                continue;
-            }
-
             Command::Status status = Command::Status::SUCCESS;
             
             // fetch new command ID
@@ -191,6 +170,5 @@ void* command_handler(void* arg) {
                 // TODO: FDIR
             }
         }
-        std::this_thread::sleep_until(now + std::chrono::milliseconds(BB_Constants::TICK_RATE_MS));
     }
 }
