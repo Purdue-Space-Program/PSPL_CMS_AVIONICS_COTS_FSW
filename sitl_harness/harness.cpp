@@ -92,7 +92,7 @@ void pspl_spi_init(void) {}
 
 uint8_t ADS1263_init_ADC1(ADS1263_DRATE rate) {
     // load the data file
-    data_file.open("sitl_data/sensornet_data_delta_cf_2_out.csv");
+    data_file.open("sitl_data/sensornet_data_delta_cf_2_out_cut.csv");
     if (!data_file.is_open()) {
         std::cerr << "Error opening file" << std::endl;
         exit(EXIT_FAILURE);
@@ -116,7 +116,7 @@ uint32_t ADS1263_GetChannalValue(uint8_t Channel) {
     double dt = get_time() - real_t0;
     while (file_time() - file_t0 < dt) {
         std::getline(data_file, curr_line);
-        std::cout << "Curr line: " << curr_line << std::endl;
+        // std::cout << "Curr line: " << curr_line << std::endl;
         if (data_file.eof()) {
             std::cerr << "End of file reached" << std::endl;
             exit(0);
