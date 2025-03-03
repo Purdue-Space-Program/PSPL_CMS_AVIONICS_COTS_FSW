@@ -1,6 +1,6 @@
 #pragma once
 
-#include <linux/spi/spi.h>
+#include <linux/spi/spidev.h>
 #include <stdint.h>
 
 namespace SysState {
