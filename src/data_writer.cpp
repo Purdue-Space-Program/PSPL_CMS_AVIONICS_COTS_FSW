@@ -1,9 +1,10 @@
 #include "protocols.hpp"
+#include <cerrno>
 #include <config.hpp>
+#include <cstdio>
+#include <cstdlib>
 #include <queue.hpp>
 #include <state.hpp>
-
-#include <cerrno>
 extern "C" {
 #include <sys/stat.h>
 #include <unistd.h>
