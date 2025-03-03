@@ -88,11 +88,11 @@ void* command_handler(void* arg) {
             switch (packet.cmd_id) {
                 case Command::Commands::SET_FU_UPPER_SETP: {
                     uint64_t temp;
-                    int bytes_read = read(cmd_client_sock, &temp, sizeof(BB_State::bb_fu_upper_setp));
+                    ssize_t bytes_read = read(cmd_client_sock, &temp, sizeof(BB_State::bb_fu_upper_setp));
 
-                    if (bytes_read < static_cast<int>(sizeof(BB_State::bb_fu_upper_setp))) {
+                    if (bytes_read < static_cast<ssize_t>(sizeof(BB_State::bb_fu_upper_setp))) {
                         status = Command::Status::NOT_ENOUGH_ARGS;
-                    } else if (bytes_read > sizeof(BB_State::bb_fu_upper_setp)) {
+                    } else if (bytes_read > static_cast<ssize_t>(sizeof(BB_State::bb_fu_upper_setp))) {
                         status = Command::Status::TOO_MANY_ARGS;
                     } else {
                         BB_State::bb_fu_upper_setp = temp;
@@ -101,11 +101,11 @@ void* command_handler(void* arg) {
                 }
                 case Command::Commands::SET_FU_LOWER_SETP: {
                     uint64_t temp;
-                    int bytes_read = read(cmd_client_sock, &temp, sizeof(BB_State::bb_fu_lower_setp));
+                    ssize_t bytes_read = read(cmd_client_sock, &temp, sizeof(BB_State::bb_fu_lower_setp));
 
-                    if (bytes_read < static_cast<int>(sizeof(BB_State::bb_fu_lower_setp))) {
+                    if (bytes_read < static_cast<ssize_t>(sizeof(BB_State::bb_fu_lower_setp))) {
                         status = Command::Status::NOT_ENOUGH_ARGS;
-                    } else if (bytes_read > sizeof(BB_State::bb_fu_lower_setp)) {
+                    } else if (bytes_read > static_cast<ssize_t>(sizeof(BB_State::bb_fu_lower_setp))) {
                         status = Command::Status::TOO_MANY_ARGS;
                     } else {
                         BB_State::bb_fu_lower_setp = temp;

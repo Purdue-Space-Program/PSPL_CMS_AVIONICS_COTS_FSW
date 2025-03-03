@@ -16,3 +16,5 @@ RUN apt-get install -y ripgrep
 RUN apt-get install -y libboost-all-dev
 RUN apt-get install -y clang
 RUN apt-get install -y git-lfs
+RUN apt-get install -y libc++-dev libc++abi-dev
+RUN apt-get install -y lldb gdb

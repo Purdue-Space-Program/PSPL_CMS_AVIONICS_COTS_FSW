@@ -9,7 +9,7 @@ extern "C" {
 
 class Queue {
 private:
-    Telemetry::SensorPacket_t arr[Telemetry::DATA_QUEUE_LENGTH] = {0};
+    Telemetry::SensorPacket_t arr[Telemetry::DATA_QUEUE_LENGTH] = {};
 
     size_t head;
     size_t tail;

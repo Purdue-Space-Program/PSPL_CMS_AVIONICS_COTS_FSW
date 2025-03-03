@@ -50,22 +50,19 @@ void* daq(void* arg) {
     sem_post(&start_sem);
 
     while (true) {
-        auto now = time_point_cast<microseconds>(steady_clock::now());
+        // auto now = time_point_cast<microseconds>(steady_clock::now());
 
         for (uint8_t ch = Telemetry::AI_CHANNEL_START; ch < Telemetry::NUM_AI_CHANNELS; ch += 1) {
             struct timespec timestamp;
-
-            // read data
-            uint64_t value = ADS1263_GetChannalValue(ch);
             clock_gettime(CLOCK_MONOTONIC, &timestamp);
 
-            uint64_t data_value;
-            memcpy(&data_value, &value, sizeof(value));
+            // read data
+            const uint64_t value = ADS1263_GetChannalValue(ch);
 
             // Enqueue data
             Telemetry::data_queue.enqueue({
                 .timestamp = timestamp.tv_sec * 1000000UL + timestamp.tv_nsec / 1000UL, // us
-                .data = data_value,
+                .data = value,
                 .sensor_id = ch,
             });
 

@@ -1,17 +1,20 @@
 SANITIZE ?= 0
 
+# CC = clang
+# CXX = clang++
+
 CC = gcc
 CXX = g++
 
 IGNORED_WARNINGS = -Wno-unused-function -Wno-unknown-pragmas -Wno-unused-const-variable
-CFLAGS = -Wall $(IGNORED_WARNINGS) -std=c11 -O2 -flto -Iinclude/
-CXXFLAGS = -Wall $(IGNORED_WARNINGS) -std=c++20 -O2 -flto -Iinclude/
-LDFLAGS = -flto
+CFLAGS = -Wall $(IGNORED_WARNINGS) -std=c11 -O2 -flto -Iinclude/ -ggdb
+CXXFLAGS = -Wall $(IGNORED_WARNINGS) -std=c++20 -O2 -flto -Iinclude/ -ggdb
+LDFLAGS = -flto -ggdb
 
 ifeq ($(SANITIZE), 1)
   CFLAGS += -fsanitize=address,undefined,leak -fno-omit-frame-pointer -g
   CXXFLAGS += -fsanitize=address,undefined,leak -fno-omit-frame-pointer -g
-  LDFLAGS += -fsanitize=address,undefined,leak
+  LDFLAGS += -fsanitize=address,undefined,leak -g
 endif
 
 OBJS = bin/bang_bang_controller.o bin/command_handler.o bin/daq.o bin/data_writer.o bin/main.o bin/queue.o
@@ -27,10 +30,10 @@ all: bin/fsw
 sitl: bin/fsw_sitl
 
 bin/fsw: $(FULL_OBJS)
-	g++ $(LDFLAGS) -o $@ $^ -lgpiod
+	$(CXX) $(LDFLAGS) -o $@ $^ -lgpiod
 
 bin/fsw_sitl: $(SITL_OBJS)
-	g++ $(LDFLAGS) -o $@ $^
+	$(CXX) $(LDFLAGS) -o $@ $^
 
 clean:
 	rm -rf bin

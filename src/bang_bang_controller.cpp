@@ -43,15 +43,14 @@ void* bang_bang_controller(void* arg) {
         auto now = time_point_cast<microseconds>(steady_clock::now());
 
         Telemetry::state_mutex.lock();
-        int curr_fu_pressure = Telemetry::fu_pressure;
-        int curr_ox_pressure = Telemetry::ox_pressure;
-        Telemetry::state_mutex.unlock();
-
+        uint64_t curr_fu_pressure = Telemetry::fu_pressure;
+        uint64_t curr_ox_pressure = Telemetry::ox_pressure;
         State curr_fu_state  = bb_fu_state;
         State curr_ox_state  = bb_ox_state;
+        Telemetry::state_mutex.unlock();
 
         // find new FU state
-        switch (bb_fu_state) {
+        switch (curr_fu_state) {
             case REGULATE: {
                 if ((curr_fu_pressure >= bb_fu_upper_setp)) {
                     intended_fu_pos = BB_Constants::BB_CLOSE;
@@ -71,7 +70,7 @@ void* bang_bang_controller(void* arg) {
         }
 
         // Find new OX state
-        switch (bb_ox_state) {
+        switch (curr_ox_state) {
             case REGULATE: {
                 if ((curr_ox_pressure >= bb_ox_upper_setp)) {
                     intended_ox_pos = BB_Constants::BB_CLOSE;

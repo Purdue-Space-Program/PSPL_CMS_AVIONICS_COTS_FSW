@@ -3,16 +3,16 @@
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
-
-extern "C" {
-#include "ads1263.h"
-}
-
 #include <ctime>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <string>
+
+extern "C" {
+#include "ads1263.h"
+}
 
 std::ifstream data_file;
 std::string curr_line;
@@ -113,9 +113,7 @@ void pspl_gpio_init(void) {
 }
 void pspl_spi_init(void) {}
 
-uint8_t ADS1263_init_ADC1(ADS1263_DRATE rate) {
-    return 0;
-}
+uint8_t ADS1263_init_ADC1(ADS1263_DRATE rate) { return 0; }
 
 int usleep(__useconds_t usec);
 uint32_t ADS1263_GetChannalValue(uint8_t Channel) {
@@ -138,7 +136,7 @@ uint32_t ADS1263_GetChannalValue(uint8_t Channel) {
         return 0;
     }
 
-    const std::string psi_str = get_curr_col(1);
+    const std::string psi_str = get_curr_col(col_idx);
     const double psi = std::stod(psi_str);
     return static_cast<uint32_t>(psi * 1000000.0);
 }
