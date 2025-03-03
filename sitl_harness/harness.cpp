@@ -107,7 +107,7 @@ uint8_t ADS1263_init_ADC1(ADS1263_DRATE rate) {
 
     std::string header;
     std::getline(data_file, header);
-    std::cout << "Header: " << header << std::endl;
+    // std::cout << "Header: " << header << std::endl;
 
     // read the first line of data
     std::getline(data_file, curr_line);
@@ -125,7 +125,6 @@ uint32_t ADS1263_GetChannalValue(uint8_t Channel) {
         std::getline(data_file, curr_line);
         // std::cout << "Curr line: " << curr_line << std::endl;
         if (data_file.eof()) {
-            std::cerr << "End of file reached" << std::endl;
             exit(0);
         }
     }
@@ -151,11 +150,19 @@ void fsw_gpio_init() {}
 void fsw_gpio_cleanup() {}
 
 int fsw_gpio_set_fu(int value) {
+    if (BB_State::bb_fu_state == BB_State::State::ISOLATE) {
+        return 0;
+    }
+
     double dt = get_time() - real_t0;
     std::cout << "FU," << dt << "," << value << "\n";
     return 0;
 }
 int fsw_gpio_set_ox(int value) {
+    if (BB_State::bb_ox_state == BB_State::State::ISOLATE) {
+        return 0;
+    }
+
     double dt = get_time() - real_t0;
     std::cout << "OX," << dt << "," << value << "\n";
     return 0;
