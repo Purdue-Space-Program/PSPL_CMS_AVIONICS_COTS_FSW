@@ -89,12 +89,12 @@ void* bang_bang_controller(void* arg) {
             }
         }
 
-        if (now >= (fu_last_set + milliseconds(50)) && bb_fu_pos != intended_fu_pos) {
+        if (now >= (fu_last_set + milliseconds(BB_Constants::FU_MIN_RATE_MS)) && bb_fu_pos != intended_fu_pos) {
             bb_fu_pos   = intended_fu_pos;
             fu_last_set = now;
         }
 
-        if (now >= (ox_last_set + milliseconds(50)) && bb_ox_pos != intended_ox_pos) {
+        if (now >= (ox_last_set + milliseconds(BB_Constants::OX_MIN_RATE_MS)) && bb_ox_pos != intended_ox_pos) {
             bb_ox_pos   = intended_ox_pos;
             ox_last_set = now;
         }

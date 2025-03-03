@@ -26,7 +26,9 @@ namespace BB_Constants {
     constexpr int   BB_FU_GPIO_PIN = 20;
     constexpr int   BB_OX_GPIO_PIN = 21;
 
-    constexpr uint8_t TICK_RATE_MS = 10;
+    constexpr uint8_t TICK_RATE_MS    = 10;
+    constexpr uint8_t FU_MIN_RATE_MS  = 10;
+    constexpr uint8_t OX_MIN_RATE_MS  = 10;
 }
 
 namespace Command {
