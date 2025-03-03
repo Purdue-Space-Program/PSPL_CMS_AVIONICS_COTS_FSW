@@ -21,8 +21,8 @@ int   BB_State::bb_ox_pos   = BB_Constants::BB_CLOSE;
 
 uint64_t BB_State::bb_fu_upper_setp = 305 * 1000000;
 uint64_t BB_State::bb_fu_lower_setp = 295 * 1000000;
-uint64_t BB_State::bb_ox_upper_setp = 305 * 1000000;
-uint64_t BB_State::bb_ox_lower_setp = 295 * 1000000;
+uint64_t BB_State::bb_ox_upper_setp = 310 * 1000000;
+uint64_t BB_State::bb_ox_lower_setp = 305 * 1000000;
 
 void* bang_bang_controller(void* arg) {
     struct sched_param param;
@@ -94,7 +94,7 @@ void* bang_bang_controller(void* arg) {
             fu_last_set = now;
         }
 
-        if (now >= (ox_last_set + milliseconds(50)) && bb_fu_state != intended_ox_pos) {
+        if (now >= (ox_last_set + milliseconds(50)) && bb_ox_pos != intended_ox_pos) {
             bb_ox_pos   = intended_ox_pos;
             ox_last_set = now;
         }

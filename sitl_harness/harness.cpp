@@ -150,5 +150,13 @@ void ADS1263_SetMode(uint8_t Mode) {}
 void fsw_gpio_init() {}
 void fsw_gpio_cleanup() {}
 
-void fsw_gpio_set_fu(int value) { std::cout << "FU: " << value << std::endl; }
-void fsw_gpio_set_ox(int value) { std::cout << "OX: " << value << std::endl; }
+int fsw_gpio_set_fu(int value) {
+    double dt = get_time() - real_t0;
+    std::cout << "FU," << dt << "," << value << "\n";
+    return 0;
+}
+int fsw_gpio_set_ox(int value) {
+    double dt = get_time() - real_t0;
+    std::cout << "OX," << dt << "," << value << "\n";
+    return 0;
+}
