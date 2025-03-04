@@ -18,6 +18,12 @@ class Command(IntEnum):
     SET_BB_STATE_OPEN     = 12
     NOOP = 13
 
+class Status(IntEnum):
+    SUCCESS = 0
+    NOT_ENOUGH_ARGS = 1
+    TOO_MANY_ARGS   = 2
+    UNRECOGNIZED_COMMAND = 3
+
 FORMAT_NO_ARGS      = 'B'
 FORMAT_NO_ARGS_SIZE = calcsize(FORMAT_NO_ARGS)
 
@@ -72,13 +78,13 @@ def send_command(cmd: str, *args, sock: socket | None = None):
     # if socket given, use it
     #   else open and close one
     with socket(AF_INET, SOCK_STREAM) as s:
-        s.connect(("192.168.1.103", 1234))
+        s.connect(("128.46.118.59", 1234))
         
         packet = pack(commands[cmd][1], commands[cmd][0].value)
         s.send(packet)
 
-        val = s.recv(1)
-        print(val)
+        val = int.from_bytes(s.recv(1), byteorder='big')
+        print(f'Status: {Status(val).name}')
 
 if __name__ == '__main__':
     try:
@@ -92,7 +98,7 @@ if __name__ == '__main__':
             if inp[0] in commands:
                 send_command(inp[0])
             elif inp[0] != '':
-                print('command not recognized!')
+                print('Command not recognized!!')
 
     except KeyboardInterrupt:
         print()
