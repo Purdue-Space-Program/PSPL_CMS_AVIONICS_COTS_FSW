@@ -167,6 +167,7 @@ void* command_handler(void* arg) {
                     std::cout << "ABORT command received at " << time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()).time_since_epoch() << std::endl;
                     break;
                 }
+                default: status = Command::Status::UNRECOGNIZED_COMMAND;
             }
 
             int bytes_sent = send(cmd_client_sock, &status, sizeof(Command::Status), 0);

@@ -25,7 +25,8 @@ namespace Command {
     enum class Status : uint8_t {
         SUCCESS = 0,
         NOT_ENOUGH_ARGS = 1,
-        TOO_MANY_ARGS = 2,
+        TOO_MANY_ARGS   = 2,
+        UNRECOGNIZED_COMMAND = 3,
     };
 
     // Packet probably not necessary
