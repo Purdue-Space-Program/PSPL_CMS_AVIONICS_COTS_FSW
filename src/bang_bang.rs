@@ -1,6 +1,7 @@
-use crate::config;
+use crate::daq::SensorPacket;
+use crate::{config, daq, inst_to_unix_micros};
 
-use std::sync::{Arc, RwLock};
+use std::sync::{Arc, RwLock, mpsc};
 use std::thread;
 use std::time::Instant;
 
@@ -60,6 +61,11 @@ pub struct System {
     pressure: Arc<RwLock<u64>>,
     gpio: Lines<Output>,
     state: SystemState,
+
+    tx: mpsc::Sender<daq::SensorPacket>,
+    usp_sensor_id: u64,
+    lsp_sensor_id: u64,
+    valve_sensor_id: u64,
 }
 
 impl System {
@@ -67,12 +73,20 @@ impl System {
         config: Arc<RwLock<SystemConfig>>,
         pressure: Arc<RwLock<u64>>,
         gpio: Lines<Output>,
+        tx: mpsc::Sender<daq::SensorPacket>,
+        usp_sensor_id: u64,
+        lsp_sensor_id: u64,
+        valve_sensor_id: u64,
     ) -> Self {
         System {
             config,
             pressure,
             gpio,
             state: SystemState::new(),
+            tx,
+            usp_sensor_id,
+            lsp_sensor_id,
+            valve_sensor_id,
         }
     }
 
@@ -97,20 +111,45 @@ impl System {
         }
 
         // valves are normally closed
-        match self.state.get_position() {
+        let valve_pos = self.state.get_position();
+        match valve_pos {
             ValvePos::Open => self.gpio.set_values(&[true]).unwrap(),
             ValvePos::Closed => self.gpio.set_values(&[false]).unwrap(),
         }
+
+        let timestamp = inst_to_unix_micros(Instant::now());
+        self.tx
+            .send(SensorPacket {
+                timestamp,
+                sensor_id: self.usp_sensor_id,
+                data: config.upper_setpoint,
+            })
+            .unwrap();
+        self.tx
+            .send(SensorPacket {
+                timestamp,
+                sensor_id: self.lsp_sensor_id,
+                data: config.lower_setpoint,
+            })
+            .unwrap();
+        self.tx
+            .send(SensorPacket {
+                timestamp,
+                sensor_id: self.valve_sensor_id,
+                data: match valve_pos {
+                    ValvePos::Open => 1,
+                    ValvePos::Closed => 0,
+                },
+            })
+            .unwrap();
     }
 }
 
 pub fn start_bang_bang(
     fu_pressure: Arc<RwLock<u64>>,
     ox_pressure: Arc<RwLock<u64>>,
-) -> (
-    Arc<RwLock<SystemConfig>>,
-    Arc<RwLock<SystemConfig>>,
-) {
+    tx: mpsc::Sender<daq::SensorPacket>,
+) -> (Arc<RwLock<SystemConfig>>, Arc<RwLock<SystemConfig>>) {
     let chip = gpiod::Chip::new("/dev/gpiochip0").expect("Failed to open GPIO chip");
 
     // bang-bang setup
@@ -135,8 +174,24 @@ pub fn start_bang_bang(
         .request_lines(Options::output([config::BB_OX_GPIO_PIN]).consumer("bb_ox"))
         .unwrap();
 
-    let fu_system = System::new(fu_config.clone(), fu_pressure.clone(), fu_gpio);
-    let ox_system = System::new(ox_config.clone(), ox_pressure.clone(), ox_gpio);
+    let fu_system = System::new(
+        fu_config.clone(),
+        fu_pressure.clone(),
+        fu_gpio,
+        tx.clone(),
+        config::FU_USP_SENSOR_ID,
+        config::FU_LSP_SENSOR_ID,
+        config::FU_VALVE_SENSOR_ID,
+    );
+    let ox_system = System::new(
+        ox_config.clone(),
+        ox_pressure.clone(),
+        ox_gpio,
+        tx,
+        config::OX_USP_SENSOR_ID,
+        config::OX_LSP_SENSOR_ID,
+        config::OX_VALVE_SENSOR_ID,
+    );
 
     thread::spawn(move || {
         bang_bang_controller([fu_system, ox_system]);

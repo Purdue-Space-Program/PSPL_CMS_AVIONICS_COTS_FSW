@@ -29,8 +29,6 @@ pub const ADC_CHANNELS: [(u8, u8); NUM_AI_CHANNELS] = [
     CHANNEL_TC_1,
 ];
 
-pub const ADC_SENSOR_IDS: [u64; NUM_AI_CHANNELS] = [0, 1, 2, 3, 4];
-
 // ADS1263 configuration
 pub const ADC_SPI_DEVICE: &str = "/dev/spidev0.0";
 pub const ADC_SPI_SPEED: u32 = 500_000; // 500 kHz
@@ -41,3 +39,12 @@ pub const ADC_SAMPLE_RATE: ads1263::DataRate = ads1263::DataRate::Sps4800; // 48
 
 // Data writer config
 pub const DATA_DIR: &str = "/var/lib/psp_fsw";
+
+// Sensor IDs
+pub const ADC_SENSOR_IDS: [u64; NUM_AI_CHANNELS] = [0, 1, 2, 3, 4];
+pub const OX_USP_SENSOR_ID: u64 = 5; // upper setpoint
+pub const OX_LSP_SENSOR_ID: u64 = 6; // lower setpoint
+pub const FU_USP_SENSOR_ID: u64 = 7; // upper setpoint
+pub const FU_LSP_SENSOR_ID: u64 = 8; // lower setpoint
+pub const OX_VALVE_SENSOR_ID: u64 = 9;
+pub const FU_VALVE_SENSOR_ID: u64 = 10;

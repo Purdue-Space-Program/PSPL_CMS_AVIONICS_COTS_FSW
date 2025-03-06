@@ -1,8 +1,8 @@
 use std::sync::{Arc, RwLock, mpsc};
 use std::thread;
 
-use crate::ads1263;
 use crate::config;
+use crate::{ads1263, inst_to_unix_micros};
 
 #[repr(C)]
 pub struct SensorPacket {
@@ -14,7 +14,7 @@ pub struct SensorPacket {
 pub fn start_daq(
     fu_pressure: Arc<RwLock<u64>>,
     ox_pressure: Arc<RwLock<u64>>,
-) -> mpsc::Receiver<SensorPacket> {
+) -> (mpsc::Sender<SensorPacket>, mpsc::Receiver<SensorPacket>) {
     let mut adc = ads1263::Ads1263::new(
         config::ADC_SPI_DEVICE,
         config::ADC_SPI_SPEED,
@@ -25,6 +25,7 @@ pub fn start_daq(
 
     adc.init_adc1(config::ADC_SAMPLE_RATE);
     let (tx, rx) = mpsc::channel::<SensorPacket>();
+    let tx_ret = tx.clone();
 
     thread::spawn(move || {
         loop {
@@ -32,9 +33,10 @@ pub fn start_daq(
                 let sid = config::ADC_SENSOR_IDS[i];
                 let ch = config::ADC_CHANNELS[i];
                 let (ts, data) = adc.read_channel_adc1(ch.0, ch.1);
+                let timestamp = inst_to_unix_micros(ts);
 
                 let packet = SensorPacket {
-                    timestamp: ts.as_micros() as u64,
+                    timestamp,
                     data: data as u64,
                     sensor_id: sid,
                 };
@@ -56,5 +58,5 @@ pub fn start_daq(
         }
     });
 
-    rx
+    (tx_ret, rx)
 }

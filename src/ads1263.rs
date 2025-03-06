@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use anyhow::anyhow;
 
 use core::time::Duration;
@@ -5,8 +7,8 @@ use gpiod::{Input, Lines, Options, Output};
 use spidev::{SpiModeFlags, Spidev, SpidevOptions, SpidevTransfer};
 use std::io::prelude::*;
 use std::thread::sleep;
+use std::time::Instant;
 
-#[allow(dead_code)]
 #[derive(Copy, Clone, Debug)]
 pub enum Reg {
     /*Register address, followed by reset the default values */
@@ -39,7 +41,6 @@ pub enum Reg {
     Adc2Fsc1,  // 40h
 }
 
-#[allow(dead_code)]
 #[repr(u8)]
 #[derive(Copy, Clone, Debug)]
 pub enum Cmd {
@@ -82,7 +83,6 @@ impl Into<u8> for Cmd {
     }
 }
 
-#[allow(dead_code)]
 pub enum Gain {
     Gain1 = 0,  /*GAIN  1 */
     Gain2 = 1,  /*GAIN  2 */
@@ -93,7 +93,6 @@ pub enum Gain {
     Gain64 = 6, /*GAIN  64 */
 }
 
-#[allow(dead_code)]
 pub enum DataRate {
     Sps2_5 = 0,
     Sps5,
@@ -113,7 +112,6 @@ pub enum DataRate {
     Sps38400,
 }
 
-#[allow(dead_code)]
 pub enum Delay {
     Delay0s = 0,
     Delay8_7us,
@@ -129,7 +127,6 @@ pub enum Delay {
     Delay8_8ms,
 }
 
-#[allow(dead_code)]
 pub enum Adc2DataRate {
     Sps10 = 0,
     Sps100,
@@ -137,7 +134,6 @@ pub enum Adc2DataRate {
     Sps800,
 }
 
-#[allow(dead_code)]
 pub enum Adc2Gain {
     Gain1 = 0,
     Gain2,
@@ -156,7 +152,6 @@ pub struct Ads1263 {
     reset: Lines<Output>,
 }
 
-#[allow(dead_code)]
 pub const VCOM_CHANNEL: u8 = 10;
 
 impl Ads1263 {
@@ -260,9 +255,10 @@ impl Ads1263 {
         return (sum as u8) ^ crc == 0x00;
     }
 
-    fn wait_drdy(&mut self) -> Duration {
+    fn wait_drdy(&mut self) -> Instant {
         let ev = self.drdy.read_event().unwrap();
-        ev.time
+        // ev.time // can't use this it's a Duration even though it's a CLOCK_MONOTONIC value
+        Instant::now()
     }
 
     pub fn chip_id(&mut self) -> u8 {
@@ -398,7 +394,7 @@ impl Ads1263 {
         data
     }
 
-    pub fn read_channel_adc1(&mut self, pos: u8, neg: u8) -> (Duration, u32) {
+    pub fn read_channel_adc1(&mut self, pos: u8, neg: u8) -> (Instant, u32) {
         self.set_channel(pos, neg);
         let res = self.wait_drdy();
         (res, self.read_adc1())
