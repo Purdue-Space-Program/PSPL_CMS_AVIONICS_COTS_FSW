@@ -104,11 +104,12 @@ impl System {
     }
 }
 
-pub fn start_bang_bang() -> (
+pub fn start_bang_bang(
+    fu_pressure: Arc<RwLock<u64>>,
+    ox_pressure: Arc<RwLock<u64>>,
+) -> (
     Arc<RwLock<SystemConfig>>,
     Arc<RwLock<SystemConfig>>,
-    Arc<RwLock<u64>>,
-    Arc<RwLock<u64>>,
 ) {
     let chip = gpiod::Chip::new("/dev/gpiochip0").expect("Failed to open GPIO chip");
 
@@ -127,9 +128,6 @@ pub fn start_bang_bang() -> (
     let fu_config = Arc::new(RwLock::new(fu_config));
     let ox_config = Arc::new(RwLock::new(ox_config));
 
-    let fu_pressure = Arc::new(RwLock::new(0));
-    let ox_pressure = Arc::new(RwLock::new(0));
-
     let fu_gpio = chip
         .request_lines(Options::output([config::BB_FU_GPIO_PIN]).consumer("bb_fu"))
         .unwrap();
@@ -144,7 +142,7 @@ pub fn start_bang_bang() -> (
         bang_bang_controller([fu_system, ox_system]);
     });
 
-    (fu_config, ox_config, fu_pressure, ox_pressure)
+    (fu_config, ox_config)
 }
 
 fn bang_bang_controller<const N: usize>(mut systems: [System; N]) {

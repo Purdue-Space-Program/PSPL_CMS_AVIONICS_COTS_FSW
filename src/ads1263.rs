@@ -3,11 +3,10 @@ use anyhow::anyhow;
 use core::time::Duration;
 use gpiod::{Input, Lines, Options, Output};
 use spidev::{SpiModeFlags, Spidev, SpidevOptions, SpidevTransfer};
-use std::io;
 use std::io::prelude::*;
 use std::thread::sleep;
-use std::time::Instant;
 
+#[allow(dead_code)]
 #[derive(Copy, Clone, Debug)]
 pub enum Reg {
     /*Register address, followed by reset the default values */
@@ -40,6 +39,7 @@ pub enum Reg {
     Adc2Fsc1,  // 40h
 }
 
+#[allow(dead_code)]
 #[repr(u8)]
 #[derive(Copy, Clone, Debug)]
 pub enum Cmd {
@@ -82,6 +82,7 @@ impl Into<u8> for Cmd {
     }
 }
 
+#[allow(dead_code)]
 pub enum Gain {
     Gain1 = 0,  /*GAIN  1 */
     Gain2 = 1,  /*GAIN  2 */
@@ -92,6 +93,7 @@ pub enum Gain {
     Gain64 = 6, /*GAIN  64 */
 }
 
+#[allow(dead_code)]
 pub enum DataRate {
     Sps2_5 = 0,
     Sps5,
@@ -111,6 +113,7 @@ pub enum DataRate {
     Sps38400,
 }
 
+#[allow(dead_code)]
 pub enum Delay {
     Delay0s = 0,
     Delay8_7us,
@@ -126,6 +129,7 @@ pub enum Delay {
     Delay8_8ms,
 }
 
+#[allow(dead_code)]
 pub enum Adc2DataRate {
     Sps10 = 0,
     Sps100,
@@ -133,6 +137,7 @@ pub enum Adc2DataRate {
     Sps800,
 }
 
+#[allow(dead_code)]
 pub enum Adc2Gain {
     Gain1 = 0,
     Gain2,
@@ -151,6 +156,7 @@ pub struct Ads1263 {
     reset: Lines<Output>,
 }
 
+#[allow(dead_code)]
 pub const VCOM_CHANNEL: u8 = 10;
 
 impl Ads1263 {

@@ -38,3 +38,6 @@ pub const ADC_DRDY_PIN: u32 = 17;
 pub const ADC_RST_PIN: u32 = 18;
 pub const ADC_CS_PIN: u32 = 22;
 pub const ADC_SAMPLE_RATE: ads1263::DataRate = ads1263::DataRate::Sps4800; // 4800 SPS, 960 per ch
+
+// Data writer config
+pub const DATA_DIR: &str = "/var/lib/psp_fsw";
