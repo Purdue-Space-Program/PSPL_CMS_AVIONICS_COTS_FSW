@@ -10,3 +10,4 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get install -y ripgrep
 RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
+RUN apt-get install -y protobuf-compiler

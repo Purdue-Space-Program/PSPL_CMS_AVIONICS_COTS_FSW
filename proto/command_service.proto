@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package command;
+
+service CommandService {
+  rpc SetFUUpperSetpoint(SetpointRequest) returns (Empty);
+  rpc SetFULowerSetpoint(SetpointRequest) returns (Empty);
+  rpc SetOXUpperSetpoint(SetpointRequest) returns (Empty);
+  rpc SetOXLowerSetpoint(SetpointRequest) returns (Empty);
+
+  rpc SetFUState(StateRequest) returns (Empty);
+  rpc SetOXState(StateRequest) returns (Empty);
+  rpc SetBBState(StateRequest) returns (Empty);
+
+  rpc Noop(Empty) returns (Empty);
+  rpc Start(Empty) returns (Empty);
+  rpc Abort(Empty) returns (Empty);
+}
+
+
+enum State {
+  ISOLATE = 0; // Default safe state
+  REGULATE = 1;
+  OPEN = 2;
+}
+
+// Request message for state commands
+message StateRequest {
+  State state = 1;
+}
+
+message SetpointRequest {
+  uint64 value = 1;
+}
+
+message Empty {}
