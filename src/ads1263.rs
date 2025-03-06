@@ -256,7 +256,7 @@ impl Ads1263 {
     }
 
     fn wait_drdy(&mut self) -> Instant {
-        let ev = self.drdy.read_event().unwrap();
+        let _ev = self.drdy.read_event().unwrap();
         // ev.time // can't use this it's a Duration even though it's a CLOCK_MONOTONIC value
         Instant::now()
     }
@@ -294,6 +294,14 @@ impl Ads1263 {
         let mut0 = 0x00;
         self.wreg_checked(Reg::Adc2Mux, mut0)
             .expect("Failed to write Adc2Mux register");
+
+        let mode0 = delay;
+        self.wreg_checked(Reg::Mode0, mode0 as u8)
+            .expect("Failed to write Mode0 register");
+
+        let mode1 = 0x64;
+        self.wreg_checked(Reg::Mode1, mode1)
+            .expect("Failed to write Mode1 register");
     }
 
     pub fn init_adc1(&mut self, drate: DataRate) {
@@ -349,7 +357,7 @@ impl Ads1263 {
 
         let mut rx = [0; 6];
         self.cs(false);
-        let read = self.spi.read(&mut rx).unwrap();
+        let _read = self.spi.read(&mut rx).unwrap();
         self.cs(true);
 
         let status = rx[0];
