@@ -1,13 +1,12 @@
-#![allow(unused)]
-
 use anyhow::anyhow;
 
 use core::time::Duration;
 use gpiod::{Input, Lines, Options, Output};
-use spidev::{Spidev, SpidevTransfer};
+use spidev::{SpiModeFlags, Spidev, SpidevOptions, SpidevTransfer};
 use std::io;
 use std::io::prelude::*;
 use std::thread::sleep;
+use std::time::Instant;
 
 #[derive(Copy, Clone, Debug)]
 pub enum Reg {
@@ -150,28 +149,21 @@ pub struct Ads1263 {
     drdy: Lines<Input>,
     cs: Lines<Output>,
     reset: Lines<Output>,
-
-    drdy_time: Option<Duration>, // duration since UNIX epoch, for accurately timestamping data
-
-    pub scan_mode: Ads1263ScanMode,
 }
 
-pub enum Ads1263ScanMode {
-    SingleEnded = 0,
-    Differential = 1,
-}
-
-static VCOM_CHANNEL: u8 = 10;
+pub const VCOM_CHANNEL: u8 = 10;
 
 impl Ads1263 {
-    pub fn new(
-        spi_dev: &str,
-        drdy_pin: u32,
-        cs_pin: u32,
-        reset_pin: u32,
-        scan_mode: Ads1263ScanMode,
-    ) -> Self {
-        let spi = Spidev::open(spi_dev).expect("Failed to open SPI device");
+    pub fn new(spi_dev: &str, baud: u32, drdy_pin: u32, cs_pin: u32, reset_pin: u32) -> Self {
+        let mut spi = Spidev::open(spi_dev).expect("Failed to open SPI device");
+        let spi_opts = SpidevOptions::new()
+            .bits_per_word(8)
+            .max_speed_hz(baud)
+            .mode(SpiModeFlags::SPI_MODE_1)
+            .build();
+        spi.configure(&spi_opts)
+            .expect("Failed to configure SPI device");
+
         let chip = gpiod::Chip::new("/dev/gpiochip0").expect("Failed to open GPIO chip");
 
         let drdy_opts = Options::input([drdy_pin])
@@ -196,9 +188,6 @@ impl Ads1263 {
             drdy,
             cs,
             reset,
-
-            drdy_time: None,
-            scan_mode,
         }
     }
 
@@ -265,9 +254,9 @@ impl Ads1263 {
         return (sum as u8) ^ crc == 0x00;
     }
 
-    fn wait_drdy(&mut self) {
+    fn wait_drdy(&mut self) -> Duration {
         let ev = self.drdy.read_event().unwrap();
-        self.drdy_time = Some(ev.time);
+        ev.time
     }
 
     pub fn chip_id(&mut self) -> u8 {
@@ -403,9 +392,9 @@ impl Ads1263 {
         data
     }
 
-    pub fn read_channel_adc1(&mut self, pos: u8, neg: u8) -> u32 {
+    pub fn read_channel_adc1(&mut self, pos: u8, neg: u8) -> (Duration, u32) {
         self.set_channel(pos, neg);
-        self.wait_drdy();
-        self.read_adc1()
+        let res = self.wait_drdy();
+        (res, self.read_adc1())
     }
 }

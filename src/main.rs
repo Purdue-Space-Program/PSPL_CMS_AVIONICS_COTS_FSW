@@ -1,6 +1,7 @@
 mod config; // global constants (pin numbers, etc.)
 
 mod ads1263;
+mod daq;
 mod bang_bang;
 
 use std::panic;
@@ -15,4 +16,5 @@ fn main() {
     }));
 
     let (fu_config, ox_config, fu_pressure, ox_pressure) = bang_bang::start_bang_bang();
+    let daq_rx = daq::start_daq(fu_pressure, ox_pressure);
 }
