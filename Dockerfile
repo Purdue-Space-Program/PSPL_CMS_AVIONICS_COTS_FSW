@@ -1,5 +1,7 @@
 FROM --platform=linux/arm64 debian:bookworm
 
+EXPOSE 1234 25565
+
 RUN apt-get update && apt-get install -y \
     build-essential \
     cmake \
