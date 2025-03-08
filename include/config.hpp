@@ -49,13 +49,13 @@ namespace Telemetry {
 
     constexpr uint32_t DATA_QUEUE_LENGTH = 1024;
 
-    constexpr uint8_t AI_CHANNEL_START = 0;
+    constexpr const uint8_t ADC_CHANNELS[] = { 0, 2, 4, 6, 7 }; // pt,pt,pt, tc0, tc1
+    constexpr uint8_t NUM_AI_CHANNELS  = 5;
     constexpr uint8_t CHANNEL_PT_HE    = 0;
-    constexpr uint8_t CHANNEL_PT_FU    = 1;
-    constexpr uint8_t CHANNEL_PT_OX    = 2;
-    constexpr uint8_t CHANNEL_TC_0     = 3;
-    constexpr uint8_t CHANNEL_TC_1     = 4;
-    constexpr uint8_t NUM_AI_CHANNELS  = 10;
+    constexpr uint8_t CHANNEL_PT_FU    = 2;
+    constexpr uint8_t CHANNEL_PT_OX    = 4;
+    constexpr uint8_t CHANNEL_TC_0     = 5;
+    constexpr uint8_t CHANNEL_TC_1     = 6;
 
     constexpr uint8_t TICK_RATE_MS = 1;
 

@@ -1,6 +1,7 @@
 #include "config.hpp"
 #include "queue.hpp"
 #include "state.hpp"
+#include <chrono>
 
 extern "C" {
 #include "hwif.h"
@@ -37,31 +38,40 @@ void* daq(void* arg) {
     pspl_gpio_init();
     pspl_spi_init();
 
-    ADS1263_SetMode(1); // single ended, need to change it per channel though
     if (ADS1263_init_ADC1(ADS1263_DRATE::ADS1263_4800SPS) == 1) {
         return NULL;
     }
-
-    // PT channels
-    ADS1263_SetDiffChannal(0); // AI0-1
-    ADS1263_SetDiffChannal(1); // AI2-3
-    ADS1263_SetDiffChannal(2); // AI4-5
 
     sem_post(&start_sem);
 
     while (true) {
         // auto now = time_point_cast<microseconds>(system_clock::now());
 
-        for (uint8_t ch = Telemetry::AI_CHANNEL_START; ch < Telemetry::NUM_AI_CHANNELS; ch += 1) {
-            struct timespec timestamp;
-            clock_gettime(CLOCK_MONOTONIC, &timestamp);
+        for (uint8_t ch : Telemetry::ADC_CHANNELS) {
+            auto now = std::chrono::system_clock::now();
 
             // read data
             const uint64_t value = ADS1263_GetChannalValue(ch);
 
+            uint64_t time = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
+
+            switch(ch) {
+                case Telemetry::CHANNEL_PT_HE:
+                case Telemetry::CHANNEL_PT_FU:
+                case Telemetry::CHANNEL_PT_OX: {
+                    // differential
+                    ADS1263_SetMode(1);
+                    break;
+                }
+                default: {
+                    // single ended
+                    ADS1263_SetMode(0);
+                }
+            }
+
             // Enqueue data
             Telemetry::data_queue.enqueue({
-                .timestamp = timestamp.tv_sec * 1000000UL + timestamp.tv_nsec / 1000UL, // us
+                .timestamp = time, // us
                 .data = value,
                 .sensor_id = ch,
             });
