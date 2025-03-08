@@ -67,18 +67,22 @@ void* daq(void* arg) {
             });
 
             // set bang bang loop state
-            if (ch == Telemetry::CHANNEL_PT_FU) {
-                Telemetry::state_mutex.lock();
-                Telemetry::fu_pressure = value;
-                Telemetry::state_mutex.unlock();
-            } else if (ch == Telemetry::CHANNEL_PT_OX) {
-                Telemetry::state_mutex.lock();
-                Telemetry::ox_pressure = value;
-                Telemetry::state_mutex.unlock();
-            } else if (ch == Telemetry::CHANNEL_PT_HE) {
-                Telemetry::state_mutex.lock();
-                Telemetry::he_pressure = value;
-                Telemetry::state_mutex.unlock();
+            switch(ch) {
+                case Telemetry::CHANNEL_PT_FU: {
+                    Telemetry::state_mutex.lock();
+                    Telemetry::fu_pressure = value;
+                    Telemetry::state_mutex.unlock();
+                }
+                case Telemetry::CHANNEL_PT_OX: {
+                    Telemetry::state_mutex.lock();
+                    Telemetry::ox_pressure = value;
+                    Telemetry::state_mutex.unlock();
+                }
+                case Telemetry::CHANNEL_PT_HE: {
+                    Telemetry::state_mutex.lock();
+                    Telemetry::he_pressure = value;
+                    Telemetry::state_mutex.unlock();
+                }
             }
         }
 
