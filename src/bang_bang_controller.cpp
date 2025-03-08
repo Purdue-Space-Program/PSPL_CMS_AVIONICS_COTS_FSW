@@ -89,6 +89,7 @@ void* bang_bang_controller(void* arg) {
             }
         }
 
+        Telemetry::state_mutex.lock();
         if (now >= (fu_last_set + milliseconds(BB_Constants::FU_MIN_RATE_MS)) && bb_fu_pos != intended_fu_pos) {
             bb_fu_pos   = intended_fu_pos;
             fu_last_set = now;
@@ -105,6 +106,8 @@ void* bang_bang_controller(void* arg) {
         if (fsw_gpio_set_ox(bb_ox_pos) < 0) {
             // TODO: FDIR
         }
+        Telemetry::state_mutex.unlock();
+
         std::this_thread::sleep_until(now + std::chrono::milliseconds(BB_Constants::TICK_RATE_MS));
     }
 

@@ -1,9 +1,9 @@
 #pragma once
 
-#include <stdint.h>
-
-#include <config.hpp>
 #include <queue.hpp>
+
+#include <stdint.h>
+#include <mutex>
 
 namespace SysState {
     extern State system_state;
@@ -38,7 +38,17 @@ namespace Telemetry {
     extern uint64_t ox_pressure;
     extern uint64_t tc_0;
     extern uint64_t tc_1;
-}
 
+    uint64_t* const state_telemetry[] = {
+        (uint64_t*)&BB_State::bb_fu_state,
+        (uint64_t*)&BB_State::bb_ox_state,
+        (uint64_t*)&BB_State::bb_fu_pos,
+        (uint64_t*)&BB_State::bb_ox_pos,
+        &BB_State::bb_fu_upper_setp,
+        &BB_State::bb_fu_lower_setp,
+        &BB_State::bb_ox_upper_setp,
+        &BB_State::bb_ox_lower_setp,
+    };
+}
 
 extern sem_t start_sem;

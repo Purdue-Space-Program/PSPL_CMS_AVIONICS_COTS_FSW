@@ -73,7 +73,9 @@ void* command_handler(void* arg) {
                     } else if (bytes_read > static_cast<ssize_t>(sizeof(BB_State::bb_fu_upper_setp))) {
                         status = Command::Status::TOO_MANY_ARGS;
                     } else {
+                        Telemetry::state_mutex.lock();
                         BB_State::bb_fu_upper_setp = temp;
+                        Telemetry::state_mutex.unlock();
                     }
                     break;
                 }
@@ -86,7 +88,9 @@ void* command_handler(void* arg) {
                     } else if (bytes_read > static_cast<ssize_t>(sizeof(BB_State::bb_fu_lower_setp))) {
                         status = Command::Status::TOO_MANY_ARGS;
                     } else {
+                        Telemetry::state_mutex.lock();
                         BB_State::bb_fu_lower_setp = temp;
+                        Telemetry::state_mutex.unlock();
                     }
                     break;
                 }
@@ -99,7 +103,9 @@ void* command_handler(void* arg) {
                     } else if (bytes_read > sizeof(BB_State::bb_ox_upper_setp)) {
                         status = Command::Status::TOO_MANY_ARGS;
                     } else {
+                        Telemetry::state_mutex.lock();
                         BB_State::bb_ox_upper_setp = temp;
+                        Telemetry::state_mutex.unlock();
                     }
                     break;
                 }
@@ -112,47 +118,67 @@ void* command_handler(void* arg) {
                     } else if (bytes_read > sizeof(BB_State::bb_ox_lower_setp)) {
                         status = Command::Status::TOO_MANY_ARGS;
                     } else {
+                        Telemetry::state_mutex.lock();
                         BB_State::bb_ox_lower_setp = temp;
+                        Telemetry::state_mutex.unlock();
                     }
                     break;
                 }
                 case Command::Commands::SET_FU_STATE_REGULATE: {
+                    Telemetry::state_mutex.lock();
                     BB_State::bb_fu_state = BB_State::State::REGULATE;
+                    Telemetry::state_mutex.unlock();
                     break;
                 }
                 case Command::Commands::SET_FU_STATE_ISOLATE: {
+                    Telemetry::state_mutex.lock();
                     BB_State::bb_fu_state = BB_State::State::ISOLATE;
+                    Telemetry::state_mutex.unlock();
                     break;
                 }
                 case Command::Commands::SET_FU_STATE_OPEN: {
+                    Telemetry::state_mutex.lock();
                     BB_State::bb_fu_state = BB_State::State::OPEN;
+                    Telemetry::state_mutex.unlock();
                     break;
                 }
                 case Command::Commands::SET_OX_STATE_REGULATE: {
+                    Telemetry::state_mutex.lock();
                     BB_State::bb_ox_state = BB_State::State::REGULATE;
+                    Telemetry::state_mutex.unlock();
                     break;
                 }
                 case Command::Commands::SET_OX_STATE_ISOLATE: {
+                    Telemetry::state_mutex.lock();
                     BB_State::bb_ox_state = BB_State::State::ISOLATE;
+                    Telemetry::state_mutex.unlock();
                     break;
                 }
                 case Command::Commands::SET_OX_STATE_OPEN: {
+                    Telemetry::state_mutex.lock();
                     BB_State::bb_ox_state = BB_State::State::OPEN;
+                    Telemetry::state_mutex.unlock();
                     break;
                 }
                 case Command::Commands::SET_BB_STATE_REGULATE: {
+                    Telemetry::state_mutex.lock();
                     BB_State::bb_fu_state = BB_State::State::REGULATE;
                     BB_State::bb_ox_state = BB_State::State::REGULATE;
+                    Telemetry::state_mutex.unlock();
                     break;
                 }
                 case Command::Commands::SET_BB_STATE_ISOLATE: {
+                    Telemetry::state_mutex.lock();
                     BB_State::bb_fu_state = BB_State::State::ISOLATE;
                     BB_State::bb_ox_state = BB_State::State::ISOLATE;
+                    Telemetry::state_mutex.unlock();
                     break;
                 }
                 case Command::Commands::SET_BB_STATE_OPEN: {
+                    Telemetry::state_mutex.lock();
                     BB_State::bb_fu_state = BB_State::State::OPEN;
                     BB_State::bb_ox_state = BB_State::State::OPEN;
+                    Telemetry::state_mutex.unlock();
                     break;
                 }
                 case Command::Commands::NOOP: {

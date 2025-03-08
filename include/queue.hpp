@@ -1,8 +1,8 @@
 #pragma once
 
-#include "config.hpp"
-#include <mutex>
+#include <config.hpp>
 #include <protocols.hpp>
+#include <mutex>
 extern "C" {
 #include <semaphore.h>
 }

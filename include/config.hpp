@@ -49,7 +49,7 @@ namespace Telemetry {
 
     constexpr uint32_t DATA_QUEUE_LENGTH = 1024;
 
-    constexpr const uint8_t ADC_CHANNELS[] = { 0, 2, 4, 6, 7 }; // pt,pt,pt, tc0, tc1
+    const uint8_t ADC_CHANNELS[] = { 0, 2, 4, 6, 7 }; // pt,pt,pt, tc0, tc1
     constexpr uint8_t NUM_AI_CHANNELS  = 5;
     constexpr uint8_t CHANNEL_PT_HE    = 0;
     constexpr uint8_t CHANNEL_PT_FU    = 2;
@@ -57,7 +57,19 @@ namespace Telemetry {
     constexpr uint8_t CHANNEL_TC_0     = 5;
     constexpr uint8_t CHANNEL_TC_1     = 6;
 
-    constexpr uint8_t TICK_RATE_MS = 1;
+    constexpr uint8_t STATE_CHANNEL_START = 7;
+    constexpr uint8_t CHANNEL_BB_FU_STATE = 7;
+    constexpr uint8_t CHANNEL_BB_OX_STATE = 8;
+    constexpr uint8_t CHANNEL_BB_FU_POS   = 9;
+    constexpr uint8_t CHANNEL_BB_OX_POS   = 10;
+    constexpr uint8_t CHANNEL_BB_FU_UPPER_SETP   = 11;
+    constexpr uint8_t CHANNEL_BB_OX_UPPER_SETP   = 12;
+    constexpr uint8_t CHANNEL_BB_FU_LOWER_SETP   = 13;
+    constexpr uint8_t CHANNEL_BB_OX_LOWER_SETP   = 14;
+    constexpr uint8_t NUM_STATE_CHANNELS = 8;
+
+    constexpr uint8_t AI_TICK_RATE_MS = 1;
+    constexpr uint8_t STATE_TICK_RATE_MS = 10;
 
     constexpr const char* DATA_FOLDER = "/var/lib/pspl_fsw/";
 }
