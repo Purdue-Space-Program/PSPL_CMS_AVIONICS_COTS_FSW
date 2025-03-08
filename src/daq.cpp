@@ -82,16 +82,19 @@ void* daq(void* arg) {
                     Telemetry::state_mutex.lock();
                     Telemetry::fu_pressure = value;
                     Telemetry::state_mutex.unlock();
+                    break;
                 }
                 case Telemetry::CHANNEL_PT_OX: {
                     Telemetry::state_mutex.lock();
                     Telemetry::ox_pressure = value;
                     Telemetry::state_mutex.unlock();
+                    break;
                 }
                 case Telemetry::CHANNEL_PT_HE: {
                     Telemetry::state_mutex.lock();
                     Telemetry::he_pressure = value;
                     Telemetry::state_mutex.unlock();
+                    break;
                 }
             }
         }
