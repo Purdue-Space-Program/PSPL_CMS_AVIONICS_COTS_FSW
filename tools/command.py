@@ -78,9 +78,9 @@ def send_command(cmd: str, *args, sock: socket | None = None):
     # if socket given, use it
     #   else open and close one
     with socket(AF_INET, SOCK_STREAM) as s:
-        s.connect(("128.46.118.59", 1234))
+        s.connect(("192.168.2.192", 1234))
         
-        packet = pack(commands[cmd][1], commands[cmd][0].value)
+        packet = pack(commands[cmd.lower()][1], commands[cmd.lower()][0].value)
         s.send(packet)
 
         val = int.from_bytes(s.recv(1), byteorder='big')
@@ -101,5 +101,4 @@ if __name__ == '__main__':
                 print('Command not recognized!!')
 
     except KeyboardInterrupt:
-        print()
         pass
