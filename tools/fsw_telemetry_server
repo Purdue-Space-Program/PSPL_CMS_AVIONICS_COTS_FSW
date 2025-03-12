@@ -149,8 +149,8 @@ def main():
     file_reader_thr = threading.Thread(target=telem_file_reader, daemon=True)
     file_reader_thr.start()
 
-    misc_data_writer_thr = threading.Thread(target=misc_data_writer, daemon=True)
-    misc_data_writer_thr.start()
+    # misc_data_writer_thr = threading.Thread(target=misc_data_writer, daemon=True)
+    # misc_data_writer_thr.start()
 
     host = "0.0.0.0"
     port = 25565
