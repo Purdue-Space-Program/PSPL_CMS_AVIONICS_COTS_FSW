@@ -18,7 +18,7 @@ endif
 CFLAGS += $(BOTH_FLAGS) -std=c11
 CXXFLAGS += $(BOTH_FLAGS) -std=c++20
 
-OBJS = bin/bang_bang_controller.o bin/command_handler.o bin/daq.o bin/data_writer.o bin/main.o bin/queue.o
+OBJS = bin/bang_bang_controller.o bin/command_handler.o bin/daq.o bin/data_writer.o bin/main.o bin/queue.o bin/state_writer.o
 FULL_OBJS = $(OBJS) bin/ads1263.o bin/hwif.o bin/gpio.o
 SITL_OBJS = $(OBJS) bin/harness.o
 
