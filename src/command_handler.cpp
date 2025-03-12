@@ -24,7 +24,7 @@ static Command::CommandPacket_t packet;
 
 void* command_handler(void* arg) {
     struct sched_param param;
-    param.sched_priority = 99; // highest prio
+    param.sched_priority = 10; // highest prio
     pthread_setschedparam(pthread_self(), SCHED_RR, &param);
     // TODO: FDIR
 
@@ -186,11 +186,11 @@ void* command_handler(void* arg) {
                     break;
                 }
                 case Command::Commands::START: {
-                    std::cout << "START command received at " << time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()).time_since_epoch() << std::endl;
+                    std::cout << "START command received at " << time_point_cast<std::chrono::microseconds>(std::chrono::steady_clock::now()).time_since_epoch() << std::endl;
                     break;
                 }
                 case Command::Commands::ABORT: {
-                    std::cout << "ABORT command received at " << time_point_cast<std::chrono::microseconds>(std::chrono::system_clock::now()).time_since_epoch() << std::endl;
+                    std::cout << "ABORT command received at " << time_point_cast<std::chrono::microseconds>(std::chrono::steady_clock::now()).time_since_epoch() << std::endl;
                     break;
                 }
                 default: status = Command::Status::UNRECOGNIZED_COMMAND;
