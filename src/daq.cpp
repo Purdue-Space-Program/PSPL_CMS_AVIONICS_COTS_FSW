@@ -31,7 +31,7 @@ Queue Telemetry::data_queue = Queue();
 
 void* daq(void* arg) {
     struct sched_param param;
-    param.sched_priority = 99; // highest prio
+    param.sched_priority = 10; // highest prio
     pthread_setschedparam(pthread_self(), SCHED_RR, &param);
     // TODO: FDIR
 
@@ -45,15 +45,9 @@ void* daq(void* arg) {
     sem_post(&start_sem);
 
     while (true) {
-        // auto now = time_point_cast<microseconds>(system_clock::now());
+        auto now = steady_clock::now();
 
         for (uint8_t ch : Telemetry::ADC_CHANNELS) {
-            auto now = std::chrono::system_clock::now();
-
-            // read data
-            const uint64_t value = ADS1263_GetChannalValue(ch);
-
-            uint64_t time = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
 
             switch(ch) {
                 case Telemetry::CHANNEL_PT_HE:
@@ -68,6 +62,12 @@ void* daq(void* arg) {
                     ADS1263_SetMode(0);
                 }
             }
+
+            auto now = std::chrono::steady_clock::now();
+            // read data
+            const uint64_t value = ADS1263_GetChannalValue(ch);
+
+            uint64_t time = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
 
             // Enqueue data
             Telemetry::data_queue.enqueue({
@@ -99,6 +99,6 @@ void* daq(void* arg) {
             }
         }
 
-        // std::this_thread::sleep_until(now + std::chrono::milliseconds(Telemetry::TICK_RATE_MS));
+        std::this_thread::sleep_until(now + std::chrono::milliseconds(Telemetry::AI_TICK_RATE_MS));
     }
 }
