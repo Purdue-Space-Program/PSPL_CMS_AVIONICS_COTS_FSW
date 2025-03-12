@@ -9,10 +9,16 @@
 extern "C" {
 #include <sys/stat.h>
 #include <unistd.h>
+#include <pthread.h>
 }
 
 
 void *data_writer(void *arg) {
+    struct sched_param param;
+    param.sched_priority = 10; // highest prio
+    pthread_setschedparam(pthread_self(), SCHED_RR, &param);
+    // TODO: FDIR
+
     // get UNIX epoch in seconds
     const auto now = std::chrono::system_clock::now();
     const uint64_t now_sec =
