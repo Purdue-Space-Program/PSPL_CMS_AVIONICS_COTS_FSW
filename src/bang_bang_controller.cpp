@@ -27,20 +27,20 @@ uint64_t BB_State::bb_ox_lower_setp = 305 * 1000000;
 void* bang_bang_controller(void* arg) {
     sem_wait(&start_sem);
     struct sched_param param;
-    param.sched_priority = 99; // highest prio
+    param.sched_priority = 11; // highest prio
     pthread_setschedparam(pthread_self(), SCHED_RR, &param);
     // TODO: FDIR
 
     fsw_gpio_init();
 
-    auto fu_last_set = std::chrono::system_clock::now();
+    auto fu_last_set = std::chrono::steady_clock::now();
     auto ox_last_set = fu_last_set;
 
     int intended_fu_pos = BB_Constants::BB_CLOSE;
     int intended_ox_pos = BB_Constants::BB_CLOSE;
 
     while (true) {
-        auto now = time_point_cast<microseconds>(system_clock::now());
+        auto now = steady_clock::now();
 
         Telemetry::state_mutex.lock();
         uint64_t curr_fu_pressure = Telemetry::fu_pressure;
@@ -51,7 +51,7 @@ void* bang_bang_controller(void* arg) {
 
         // find new FU state
         switch (curr_fu_state) {
-            case REGULATE: {
+            case State::REGULATE: {
                 if ((curr_fu_pressure >= bb_fu_upper_setp)) {
                     intended_fu_pos = BB_Constants::BB_CLOSE;
                 } else if (curr_fu_pressure <= bb_fu_lower_setp) {
@@ -59,11 +59,11 @@ void* bang_bang_controller(void* arg) {
                 }
                 break;
             }
-            case ISOLATE: {
+            case State::ISOLATE: {
                 intended_fu_pos = BB_Constants::BB_CLOSE;
                 break;
             }
-            case OPEN: {
+            case State::OPEN: {
                 intended_fu_pos = BB_Constants::BB_OPEN;
                 break;
             }
@@ -71,7 +71,7 @@ void* bang_bang_controller(void* arg) {
 
         // Find new OX state
         switch (curr_ox_state) {
-            case REGULATE: {
+            case State::REGULATE: {
                 if ((curr_ox_pressure >= bb_ox_upper_setp)) {
                     intended_ox_pos = BB_Constants::BB_CLOSE;
                 } else if (curr_ox_pressure <= bb_ox_lower_setp) {
@@ -79,11 +79,11 @@ void* bang_bang_controller(void* arg) {
                 }
                 break;
             }
-            case ISOLATE: {
+            case State::ISOLATE: {
                 intended_ox_pos = BB_Constants::BB_CLOSE;
                 break;
             }
-            case OPEN: {
+            case State::OPEN: {
                 intended_ox_pos = BB_Constants::BB_OPEN;
                 break;
             }
@@ -108,7 +108,7 @@ void* bang_bang_controller(void* arg) {
         }
         Telemetry::state_mutex.unlock();
 
-        std::this_thread::sleep_until(now + std::chrono::milliseconds(BB_Constants::TICK_RATE_MS));
+        std::this_thread::sleep_until(now + milliseconds(BB_Constants::TICK_RATE_MS));
     }
 
     fsw_gpio_cleanup();
