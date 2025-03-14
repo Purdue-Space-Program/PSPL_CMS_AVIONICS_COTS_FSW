@@ -1,7 +1,6 @@
 from socket import socket, AF_INET, SOCK_STREAM
 from enum import IntEnum
 from struct import unpack, calcsize
-from numpy import average
 import pandas as pd
 import synnax as sy
 
@@ -26,60 +25,49 @@ TELEM_SIZE   = calcsize(TELEM_FORMAT)
 df = pd.read_excel('tools/CMS_Avionics_Channels.xlsx')
 channels = [item for name in df['Name'] for item in [name, f'{name}_time']]
 
-# client = sy.Synnax(
-#    host="128.46.118.59", port=9090, username="Bill", password="Bill", secure=False
-# )
+client = sy.Synnax(
+   host="192.168.2.69", port=9090, username="Bill", password="Bill", secure=False
+)
 
 if __name__ == '__main__':
     with socket(AF_INET, SOCK_STREAM) as s:
-        s.connect(('192.168.1.131', 25565))
-        
-        start_time = sy.TimeStamp.now()
-        # with client.open_writer(
-        #     start=start_time,
-        #     channels=channels,
-        #     enable_auto_commit=True,
-        # ) as writer:
-        values = []
-        try:
-            # get single packet
-            packet = s.recv(TELEM_SIZE)
-            while (len(packet) != TELEM_SIZE):
-                packet = s.recv(TELEM_SIZE)
+        s.connect(('192.168.2.192', 25565))
 
-            offset = start_time + packet[0] * 1000
+        p = s.recv(TELEM_SIZE)
+        start_time_avi = p[0]
+        start_time = sy.TimeSpan.now().trunc(sy.TimeSpan.MICROSECOND)
 
-            buff = b''
-            count = 0
-            while True:
-                packet = s.recv(TELEM_SIZE * 5)
-                if packet: 
-                    buff += packet
+        offset = start_time + start_time_avi * 1000
+        with client.open_writer(
+            start=start_time,
+            channels=channels,
+            enable_auto_commit=True,
+        ) as writer:
+            values = []
+            try:
+                buff = b''
+                count = 0
+                while True:
+                    packet = s.recv(TELEM_SIZE * 10)
+                    if packet: 
+                        buff += packet
 
-                while len(buff) >= TELEM_SIZE:
-                    p = buff[:TELEM_SIZE]
-                    buff = buff[TELEM_SIZE:]
+                    while len(buff) >= TELEM_SIZE:
+                        p = buff[:TELEM_SIZE]
+                        buff = buff[TELEM_SIZE:]
 
-                    if len(p) != TELEM_SIZE:
-                        print(len(p))
-                        break
+                        if len(p) != TELEM_SIZE:
+                            print(len(p))
+                            break
 
-                    deser_packet = unpack(TELEM_FORMAT, p)
-                    
-                    name = df[df['ID'].astype(str) == str(deser_packet[2])]['Name'].iloc[0]
-                    # writer.write({
-                    #     name: int(deser_packet[1]),
-                    #     f'{name}_time': offset + deser_packet[0] * 1000,
-                    # })
-                    # print(deser_packet[1])
-                    if deser_packet[2] == 7:
-                        values.append(((((deser_packet[1] + 106823710) / 207852811.1) + 0.003734) - 1.25) / 0.005)
-                        # pass
-                    # print(deser_packet)
-                    count += 1
-        except KeyboardInterrupt:
-            print(f'\n{average(values)}')
-            pass
-        finally:
-            pass
-            # writer.close()
+                        deser_packet = unpack(TELEM_FORMAT, p)
+                        
+                        name = df[df['ID'].astype(str) == str(deser_packet[2])]['Name'].iloc[0]
+
+                        writer.write({
+                            name: int(deser_packet[1]),
+                            f'{name}_time': offset + deser_packet[0] * 1000,
+                        })
+            except KeyboardInterrupt:
+                s.close()
+                writer.close()
