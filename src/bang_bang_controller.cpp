@@ -16,8 +16,8 @@ using namespace std::chrono;
 
 State BB_State::bb_fu_state = State::ISOLATE;
 State BB_State::bb_ox_state = State::ISOLATE;
-int   BB_State::bb_fu_pos   = BB_Constants::BB_CLOSE;
-int   BB_State::bb_ox_pos   = BB_Constants::BB_CLOSE;
+uint64_t   BB_State::bb_fu_pos   = BB_Constants::BB_CLOSE;
+uint64_t   BB_State::bb_ox_pos   = BB_Constants::BB_CLOSE;
 
 uint64_t BB_State::bb_fu_upper_setp = 305 * 1000000;
 uint64_t BB_State::bb_fu_lower_setp = 295 * 1000000;
@@ -36,8 +36,8 @@ void* bang_bang_controller(void* arg) {
     auto fu_last_set = std::chrono::steady_clock::now();
     auto ox_last_set = fu_last_set;
 
-    int intended_fu_pos = BB_Constants::BB_CLOSE;
-    int intended_ox_pos = BB_Constants::BB_CLOSE;
+    uint64_t intended_fu_pos = BB_Constants::BB_CLOSE;
+    uint64_t intended_ox_pos = BB_Constants::BB_CLOSE;
 
     while (true) {
         auto now = steady_clock::now();
@@ -100,10 +100,10 @@ void* bang_bang_controller(void* arg) {
             ox_last_set = now;
         }
 
-        if (fsw_gpio_set_fu(bb_fu_pos) < 0) {
+        if (fsw_gpio_set_fu(static_cast<int>(bb_fu_pos)) < 0) {
             // TODO: FDIR
         }
-        if (fsw_gpio_set_ox(bb_ox_pos) < 0) {
+        if (fsw_gpio_set_ox(static_cast<int>(bb_ox_pos)) < 0) {
             // TODO: FDIR
         }
         Telemetry::state_mutex.unlock();
