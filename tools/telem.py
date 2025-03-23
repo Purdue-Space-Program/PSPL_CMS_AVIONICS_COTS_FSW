@@ -1,6 +1,6 @@
 from socket import socket, AF_INET, SOCK_STREAM
-from enum import IntEnum
 from struct import unpack, calcsize
+from enum import IntEnum
 import pandas as pd
 import synnax as sy
 
@@ -22,33 +22,38 @@ class Channel(IntEnum):
 TELEM_FORMAT = '<Qi4xQ'
 TELEM_SIZE   = calcsize(TELEM_FORMAT)
 
-df = pd.read_excel('tools/CMS_Avionics_Channels.xlsx')
+df = pd.read_excel('tools/CMS_Avionics_Channels.xlsx', sheet_name='channels')
 channels = [item for name in df['Name'] for item in [name, f'{name}_time']]
 
 client = sy.Synnax(
-   host="192.168.2.69", port=9090, username="Bill", password="Bill", secure=False
+    host='128.46.118.59',
+    port=9090,
+    username="Bill",
+    password="Bill",
+    secure=False,
 )
 
 if __name__ == '__main__':
     with socket(AF_INET, SOCK_STREAM) as s:
-        s.connect(('192.168.2.192', 25565))
+        s.connect(('192.168.1.143', 25565))
 
         p = s.recv(TELEM_SIZE)
-        start_time_avi = p[0]
-        start_time = sy.TimeSpan.now().trunc(sy.TimeSpan.MICROSECOND)
+        dp = unpack(TELEM_FORMAT, p)
+        start_time_avi = dp[0]
 
-        offset = start_time + start_time_avi * 1000
+        start_time = sy.TimeStamp.now()
+        offset = start_time - (start_time_avi * 1000)
+
         with client.open_writer(
             start=start_time,
             channels=channels,
             enable_auto_commit=True,
         ) as writer:
-            values = []
             try:
                 buff = b''
                 count = 0
                 while True:
-                    packet = s.recv(TELEM_SIZE * 10)
+                    packet = s.recv(TELEM_SIZE)
                     if packet: 
                         buff += packet
 
@@ -61,7 +66,7 @@ if __name__ == '__main__':
                             break
 
                         deser_packet = unpack(TELEM_FORMAT, p)
-                        
+
                         name = df[df['ID'].astype(str) == str(deser_packet[2])]['Name'].iloc[0]
 
                         writer.write({
@@ -69,5 +74,7 @@ if __name__ == '__main__':
                             f'{name}_time': offset + deser_packet[0] * 1000,
                         })
             except KeyboardInterrupt:
+                pass
+            finally:
                 s.close()
                 writer.close()
