@@ -14,8 +14,8 @@ namespace SysState {
 
 // Bang Bang Constants
 namespace BB_Constants {
-    constexpr int BB_OPEN  = 1;
-    constexpr int BB_CLOSE = 0;
+    constexpr uint64_t BB_OPEN  = 1;
+    constexpr uint64_t BB_CLOSE = 0;
 
     constexpr uint8_t BB_RATE_MS = 50;
 
@@ -49,7 +49,7 @@ namespace Telemetry {
 
     constexpr uint32_t DATA_QUEUE_LENGTH = 4096;
 
-    const uint8_t ADC_CHANNELS[] = { 0, 1, 2, 7, 9 }; // pt,pt,pt, tc0, tc1
+    const uint8_t ADC_CHANNELS[] = { 0, 1, 2, 6, 7, 9 }; // pt,pt,pt, 6, tc0, tc1
     constexpr uint8_t NUM_AI_CHANNELS  = 5;
     constexpr uint8_t CHANNEL_PT_OX    = 0;
     constexpr uint8_t CHANNEL_PT_FU    = 1;
@@ -70,7 +70,7 @@ namespace Telemetry {
 
     constexpr uint8_t CHANNEL_FREE_SPACE = 18;
 
-    constexpr uint8_t AI_TICK_RATE_MS = 1;
+    constexpr uint8_t AI_TICK_RATE_MS = 5;
     constexpr uint8_t STATE_TICK_RATE_MS = 100;
     constexpr uint8_t STAT_TICK_RATE_MS  = 100;
 
