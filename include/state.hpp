@@ -11,7 +11,7 @@ namespace SysState {
 
 // Bang Bang State
 namespace BB_State {
-    enum class State : uint8_t {
+    enum class State : uint64_t {
         ISOLATE = 0,
         OPEN    = 1,
         REGULATE = 2,
@@ -19,8 +19,8 @@ namespace BB_State {
 
     extern State bb_fu_state;
     extern State bb_ox_state;
-    extern int   bb_fu_pos;
-    extern int   bb_ox_pos;
+    extern uint64_t   bb_fu_pos;
+    extern uint64_t   bb_ox_pos;
     
     extern uint64_t bb_fu_upper_setp;
     extern uint64_t bb_fu_lower_setp;
