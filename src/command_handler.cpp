@@ -24,7 +24,7 @@ static Command::CommandPacket_t packet;
 
 void* command_handler(void* arg) {
     struct sched_param param;
-    param.sched_priority = 10; // highest prio
+    param.sched_priority = 11; // highest prio
     pthread_setschedparam(pthread_self(), SCHED_RR, &param);
     // TODO: FDIR
 
