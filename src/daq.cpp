@@ -31,7 +31,7 @@ Queue Telemetry::data_queue = Queue();
 
 void* daq(void* arg) {
     struct sched_param param;
-    param.sched_priority = 10; // highest prio
+    param.sched_priority = 11; // highest prio
     pthread_setschedparam(pthread_self(), SCHED_RR, &param);
     // TODO: FDIR
 
@@ -45,7 +45,7 @@ void* daq(void* arg) {
     sem_post(&start_sem);
 
     while (true) {
-        auto now = steady_clock::now();
+        auto now = system_clock::now();
 
         for (uint8_t ch : Telemetry::ADC_CHANNELS) {
 
@@ -60,13 +60,14 @@ void* daq(void* arg) {
                 default: {
                     // single ended
                     ADS1263_SetMode(0);
+                    break;
                 }
             }
 
-            auto now = std::chrono::steady_clock::now();
             // read data
             const uint64_t value = ADS1263_GetChannalValue(ch);
 
+            auto now = std::chrono::system_clock::now();
             uint64_t time = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
 
             // Enqueue data
