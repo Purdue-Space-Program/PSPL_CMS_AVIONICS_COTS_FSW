@@ -1,6 +1,13 @@
 from enum import IntEnum
 from struct import calcsize, pack, unpack
 from socket import socket, AF_INET, SOCK_STREAM
+from time import sleep
+import pandas as pd
+
+ADC_V_SLOPE  =  0.00000000235714724017
+ADC_V_OFFSET = -0.01390133824020600000
+AVI_IP   = '128.46.118.59'
+AVI_PORT = 1234
 
 class Command(IntEnum):
     SET_FU_UPPER_SETP = 0
@@ -16,7 +23,9 @@ class Command(IntEnum):
     SET_BB_STATE_REGULATE = 10
     SET_BB_STATE_ISOLATE  = 11
     SET_BB_STATE_OPEN     = 12
-    NOOP = 13
+    NOOP  = 13
+    START = 14
+    ABORT = 15
 
 class Status(IntEnum):
     SUCCESS = 0
@@ -27,7 +36,7 @@ class Status(IntEnum):
 FORMAT_NO_ARGS      = 'B'
 FORMAT_NO_ARGS_SIZE = calcsize(FORMAT_NO_ARGS)
 
-FORMAT_1_ARG      = 'BQ'
+FORMAT_1_ARG      = '<BQ'
 FORMAT_1_ARG_SIZE = calcsize(FORMAT_1_ARG)
 
 ### gets converted to str: (Command, Format)
@@ -73,14 +82,29 @@ for cmd, alias in aliases.items():
 def print_help() -> None:
     print('Help!')
 
+df = pd.read_excel('tools/CMS_Avionics_Channels.xlsx', 'channels')
+
 ### TODO: GIVE ME A RETURN TYPE </3
-def send_command(cmd: str, *args, sock: socket | None = None):
-    # if socket given, use it
-    #   else open and close one
+def send_command(cmd: str, args: list[str]):
+    cmd = cmd.lower()
+    int_args = [int(a) for a in args]
+
+    cmd_id = commands[cmd][0].value
+
+    # THIS SHIT IS INCORRECT ACTUALLY, WE NEED TO SEND THE ADC VALUE AND REVERSE THE CONVERSION FUUUUCK
+    match Command(cmd_id):
+        case Command.SET_FU_UPPER_SETP | Command.SET_FU_LOWER_SETP:
+            row = df[df['Name'] == 'PT-FU-201']
+            int_args = [(((ADC_V_SLOPE * i) + ADC_V_OFFSET) * row['Slope'] + row['Offset']) for i in int_args]
+        case Command.SET_OX_UPPER_SETP | Command.SET_OX_LOWER_SETP:
+            row = df[df['Name'] == 'PT-OX-201']
+            int_args = [(((ADC_V_SLOPE * i) + ADC_V_OFFSET) * row['Slope'] + row['Offset']) for i in int_args]
+            
+
     with socket(AF_INET, SOCK_STREAM) as s:
-        s.connect(("192.168.2.192", 1234))
-        
-        packet = pack(commands[cmd.lower()][1], commands[cmd.lower()][0].value)
+        s.connect((AVI_IP, AVI_PORT))
+
+        packet = pack(commands[cmd.lower()][1], cmd_id, *int_args)
         s.send(packet)
 
         val = int.from_bytes(s.recv(1), byteorder='big')
@@ -94,9 +118,9 @@ if __name__ == '__main__':
             if inp[0] == 'help' or inp[0] == 'h':
                 print_help()
                 continue
-            
+
             if inp[0] in commands:
-                send_command(inp[0])
+                send_command(inp[0], inp[1:])
             elif inp[0] != '':
                 print('Command not recognized!!')
 
