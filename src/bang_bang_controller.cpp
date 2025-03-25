@@ -52,11 +52,13 @@ void* bang_bang_controller(void* arg) {
         // find new FU state
         switch (curr_fu_state) {
             case State::REGULATE: {
+                Telemetry::state_mutex.lock();
                 if ((curr_fu_pressure >= bb_fu_upper_setp)) {
                     intended_fu_pos = BB_Constants::BB_CLOSE;
                 } else if (curr_fu_pressure <= bb_fu_lower_setp) {
                     intended_fu_pos = BB_Constants::BB_OPEN;
                 }
+                Telemetry::state_mutex.unlock();
                 break;
             }
             case State::ISOLATE: {
@@ -72,11 +74,13 @@ void* bang_bang_controller(void* arg) {
         // Find new OX state
         switch (curr_ox_state) {
             case State::REGULATE: {
+                Telemetry::state_mutex.lock();
                 if ((curr_ox_pressure >= bb_ox_upper_setp)) {
                     intended_ox_pos = BB_Constants::BB_CLOSE;
                 } else if (curr_ox_pressure <= bb_ox_lower_setp) {
                     intended_ox_pos = BB_Constants::BB_OPEN;
                 }
+                Telemetry::state_mutex.unlock();
                 break;
             }
             case State::ISOLATE: {
