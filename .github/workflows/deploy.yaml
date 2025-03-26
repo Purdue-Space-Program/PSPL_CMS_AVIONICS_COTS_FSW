@@ -16,11 +16,20 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Build Docker Image
-      run: ./run.sh
+    - name: Set up QEMU for ARM64
+      uses: docker/setup-qemu-action@v3
+      with:
+        platforms: arm64
+
+    - name: Build Docker Image for ARM64
+      run: docker build --platform linux/arm64 -t build-env .
+
+    - name: Run Docker Container for ARM64
+      run: |
+        docker run --rm --platform linux/arm64 --name build-env -v ${{ github.workspace }}:/workspace -w /workspace build-env sleep infinity &
 
     - name: Build inside Docker
-      run: docker --platform linux/arm64 exec build-env bash -c "cd /workspace && make -j$(nproc)"
+      run: docker exec build-env bash -c "cd /workspace && make -j$(nproc)"
 
     - name: Archive Build Artifacts
       uses: actions/upload-artifact@v4
