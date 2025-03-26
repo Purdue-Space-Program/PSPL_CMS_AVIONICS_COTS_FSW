@@ -17,11 +17,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Build Docker Image
-      run: docker build -t my-container .
-
-    - name: Run Docker Container
-      run: |
-        docker run -d --name build-env -v ${{ github.workspace }}:/workspace my-container tail -f /dev/null
+      run: ./run.sh
 
     - name: Build inside Docker
       run: docker exec build-env bash -c "cd /workspace && make -j$(nproc)"
