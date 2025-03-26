@@ -20,7 +20,7 @@ jobs:
       run: ./run.sh
 
     - name: Build inside Docker
-      run: docker exec build-env bash -c "cd /workspace && make -j$(nproc)"
+      run: docker --platform linux/arm64 exec build-env bash -c "cd /workspace && make -j$(nproc)"
 
     - name: Archive Build Artifacts
       uses: actions/upload-artifact@v4
