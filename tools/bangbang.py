@@ -6,8 +6,8 @@ import logging
 log = logging.getLogger(' Channel Factory')
 logging.basicConfig(level=logging.INFO)
 
-FUEL_SOLENOID_NAME = 'SV-HE-201'
-LOX_SOLENOID_NAME  = 'SV-HE-202'
+FUEL_SOLENOID_NAME = 'SV-HE-202'
+LOX_SOLENOID_NAME  = 'SV-HE-201'
 SYNNAX_IP   = '128.46.118.59'
 SYNNAX_PORT = 9090
 
