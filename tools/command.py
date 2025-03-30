@@ -2,12 +2,8 @@ from enum import IntEnum
 from struct import calcsize, pack, unpack
 from socket import socket, AF_INET, SOCK_STREAM
 from time import sleep
+import constants
 import pandas as pd
-
-ADC_V_SLOPE  =  0.00000000235714724017
-ADC_V_OFFSET = -0.01390133824020600000
-AVI_IP   = '128.46.118.59'
-AVI_PORT = 1234
 
 class Command(IntEnum):
     SET_FU_UPPER_SETP = 0
@@ -96,11 +92,11 @@ def send_command(cmd: str, args: list[str] | None = None, sock = None) -> Status
         case Command.SET_FU_UPPER_SETP | Command.SET_FU_LOWER_SETP:
             row = df[df['Name'] == 'PT-FU-201']
             if args:
-                int_args = [(((i - row['Offset']) / row['Slope']) - ADC_V_OFFSET) / ADC_V_SLOPE for i in int_args]
+                int_args = [(((i - row['Offset']) / row['Slope']) - constants.ADC_V_OFFSET) / constants.ADC_V_SLOPE for i in int_args]
         case Command.SET_OX_UPPER_SETP | Command.SET_OX_LOWER_SETP:
             row = df[df['Name'] == 'PT-OX-201']
             if args:
-                int_args = [(((i - row['Offset']) / row['Slope']) - ADC_V_OFFSET) / ADC_V_SLOPE for i in int_args]
+                int_args = [(((i - row['Offset']) / row['Slope']) - constants.ADC_V_OFFSET) / constants.ADC_V_SLOPE for i in int_args]
 
     packet = pack(commands[cmd.lower()][1], cmd_id, *int_args)
     if sock:
@@ -109,7 +105,7 @@ def send_command(cmd: str, args: list[str] | None = None, sock = None) -> Status
         val = int.from_bytes(sock.recv(1), byteorder='big')
     else:
         with socket(AF_INET, SOCK_STREAM) as s:
-            s.connect((AVI_IP, AVI_PORT))
+            s.connect((constants.AVI_IP, constants.AVI_PORT))
 
             s.send(packet)
 

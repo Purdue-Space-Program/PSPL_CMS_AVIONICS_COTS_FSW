@@ -1,6 +1,8 @@
 from socket import socket, AF_INET, SOCK_STREAM
 from struct import unpack, calcsize
 from enum import IntEnum
+import constants
+
 import pandas as pd
 import synnax as sy
 import logging
@@ -34,18 +36,18 @@ df = pd.read_excel('tools/CMS_Avionics_Channels.xlsx', sheet_name='channels')
 channels = [item for name in df['Name'] for item in [name, f'{name}_time']]
 
 client = sy.Synnax(
-    host=SYNNAX_IP,
-    port=SYNNAX_PORT,
+    host=constants.SYNNAX_IP,
+    port=constants.SYNNAX_PORT,
     username="Bill",
     password="Bill",
     secure=False,
 )
-log.info(f' Connected to Synnax at {SYNNAX_IP}:{SYNNAX_PORT}')
+log.info(f' Connected to Synnax at {constants.SYNNAX_IP}:{constants.SYNNAX_PORT}')
 
 if __name__ == '__main__':
     with socket(AF_INET, SOCK_STREAM) as s:
-        s.connect((AVI_IP, AVI_PORT))
-        log.info(f' Connected to Avionics system at {AVI_IP}:{AVI_PORT}')
+        s.connect((constants.AVI_IP, constants.AVI_PORT))
+        log.info(f' Connected to Avionics system at {constants.AVI_IP}:{constants.AVI_PORT}')
 
         p = s.recv(TELEM_SIZE)
         dp = unpack(TELEM_FORMAT, p)

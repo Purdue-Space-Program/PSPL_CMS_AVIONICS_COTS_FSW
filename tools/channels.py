@@ -5,13 +5,6 @@ import logging
 log = logging.getLogger(' Channel Factory')
 logging.basicConfig(level=logging.INFO)
 
-FUEL_SOLENOID_NAME = 'SV-HE-202'
-LOX_SOLENOID_NAME  = 'SV-HE-201'
-ADC_V_SLOPE  =  0.00000000235714724017
-ADC_V_OFFSET = -0.01390133824020600000
-IP   = '128.46.118.59'
-PORT = 9090
-
 ducers = [
     'PT-OX-201',
     'PT-FU-201',
@@ -19,12 +12,12 @@ ducers = [
 ]
 
 client = sy.Synnax(
-    host=IP,
-    port=PORT,
+    host=SYNNAX_IP,
+    port=SYNNAX_PORT,
     username='Bill',
     password='Bill',
 )
-log.info(f' Connected to Synnax at {IP}:{PORT}')
+log.info(f' Connected to Synnax at {SYNNAX_IP}:{SYNNAX_PORT}')
 
 df = pd.read_excel('tools/CMS_Avionics_Channels.xlsx', 'channels')
 
