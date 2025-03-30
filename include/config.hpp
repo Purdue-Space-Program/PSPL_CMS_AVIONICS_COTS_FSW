@@ -71,7 +71,7 @@ namespace Telemetry {
     constexpr uint8_t CHANNEL_FREE_SPACE = 18;
 
     constexpr uint8_t AI_TICK_RATE_MS = 5;
-    constexpr uint8_t STATE_TICK_RATE_MS = 100;
+    constexpr uint8_t STATE_TICK_RATE_MS = 20;
     constexpr uint8_t STAT_TICK_RATE_MS  = 100;
 
     constexpr const char* DATA_FOLDER = "/var/lib/pspl_fsw/";
