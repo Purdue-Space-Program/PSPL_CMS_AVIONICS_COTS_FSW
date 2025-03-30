@@ -85,9 +85,9 @@ def print_help() -> None:
 df = pd.read_excel('tools/CMS_Avionics_Channels.xlsx', 'channels')
 
 ### TODO: GIVE ME A RETURN TYPE </3
-def send_command(cmd: str, args: list[str]):
+def send_command(cmd: str, args: list[str] | None = None, sock = None) -> Status:
     cmd = cmd.lower()
-    int_args = [int(a) for a in args]
+    int_args = [int(a) for a in args] if args else []
 
     cmd_id = commands[cmd][0].value
 
@@ -95,20 +95,26 @@ def send_command(cmd: str, args: list[str]):
     match Command(cmd_id):
         case Command.SET_FU_UPPER_SETP | Command.SET_FU_LOWER_SETP:
             row = df[df['Name'] == 'PT-FU-201']
-            int_args = [(((ADC_V_SLOPE * i) + ADC_V_OFFSET) * row['Slope'] + row['Offset']) for i in int_args]
+            if args:
+                int_args = [(((i - row['Offset']) / row['Slope']) - ADC_V_OFFSET) / ADC_V_SLOPE for i in int_args]
         case Command.SET_OX_UPPER_SETP | Command.SET_OX_LOWER_SETP:
             row = df[df['Name'] == 'PT-OX-201']
-            int_args = [(((ADC_V_SLOPE * i) + ADC_V_OFFSET) * row['Slope'] + row['Offset']) for i in int_args]
-            
+            if args:
+                int_args = [(((i - row['Offset']) / row['Slope']) - ADC_V_OFFSET) / ADC_V_SLOPE for i in int_args]
 
-    with socket(AF_INET, SOCK_STREAM) as s:
-        s.connect((AVI_IP, AVI_PORT))
+    packet = pack(commands[cmd.lower()][1], cmd_id, *int_args)
+    if sock:
+        sock.send(packet)
 
-        packet = pack(commands[cmd.lower()][1], cmd_id, *int_args)
-        s.send(packet)
+        val = int.from_bytes(sock.recv(1), byteorder='big')
+    else:
+        with socket(AF_INET, SOCK_STREAM) as s:
+            s.connect((AVI_IP, AVI_PORT))
 
-        val = int.from_bytes(s.recv(1), byteorder='big')
-        print(f'Status: {Status(val).name}')
+            s.send(packet)
+
+            val = int.from_bytes(s.recv(1), byteorder='big')
+            return Status(val)
 
 if __name__ == '__main__':
     try:
@@ -120,7 +126,7 @@ if __name__ == '__main__':
                 continue
 
             if inp[0] in commands:
-                send_command(inp[0], inp[1:])
+                print(f'Status: {send_command(inp[0], inp[1:]).name}')
             elif inp[0] != '':
                 print('Command not recognized!!')
 
