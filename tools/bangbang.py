@@ -3,7 +3,7 @@ import command as cmd
 # necessary to add channels
 # import channels
 import logging
-log = logging.getLogger(' Channel Factory')
+log = logging.getLogger(' Bang Bang GSE')
 logging.basicConfig(level=logging.INFO)
 
 FUEL_SOLENOID_NAME = 'SV-HE-202'
@@ -25,10 +25,14 @@ if __name__ == '__main__':
             for f in frame[FUEL_SOLENOID_NAME + '-CMD']:
                 if f == 1:
                     cmd.send_command(cmd.Command.SET_FU_STATE_OPEN.name)
+                    log.info(' Fuel: OPEN')
                 if f == 0:
                     cmd.send_command(cmd.Command.SET_FU_STATE_ISOLATE.name)
+                    log.info(' Fuel: CLOSE')
             for f in frame[LOX_SOLENOID_NAME + '-CMD']:
                 if f == 1:
                     cmd.send_command(cmd.Command.SET_OX_STATE_OPEN.name)
+                    log.info(' Lox: OPEN')
                 if f == 0:
                     cmd.send_command(cmd.Command.SET_OX_STATE_ISOLATE.name)
+                    log.info(' Lox: CLOSE')
