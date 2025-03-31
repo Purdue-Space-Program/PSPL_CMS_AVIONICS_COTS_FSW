@@ -1,6 +1,7 @@
 import synnax as sy
 from synnax.channel import ChannelKeys, ChannelName
 import pandas as pd
+import constants
 import logging
 log = logging.getLogger(' Channel Factory')
 logging.basicConfig(level=logging.INFO)
@@ -12,12 +13,12 @@ ducers = [
 ]
 
 client = sy.Synnax(
-    host=SYNNAX_IP,
-    port=SYNNAX_PORT,
+    host=constants.SYNNAX_IP,
+    port=constants.SYNNAX_PORT,
     username='Bill',
     password='Bill',
 )
-log.info(f' Connected to Synnax at {SYNNAX_IP}:{SYNNAX_PORT}')
+log.info(f' Connected to Synnax at {constants.SYNNAX_IP}:{constants.SYNNAX_PORT}')
 
 df = pd.read_excel('tools/CMS_Avionics_Channels.xlsx', 'channels')
 
@@ -116,7 +117,7 @@ for _, row in df.iterrows():
     log_msg = f' Added channel: {row['Name']:<24}\t{row['Channel Type']}'
 
     if not bool(pd.isna(row['Slope'])):
-        expr = f'return (((get(\"{row['Name']}\") * {ADC_V_SLOPE}) - {ADC_V_OFFSET}) * {row['Slope']}) + {row['Offset']}'
+        expr = f'return (((get(\"{row['Name']}\") * {constants.ADC_V_SLOPE}) - {constants.ADC_V_OFFSET}) * {row['Slope']}) + {row['Offset']}'
         ch = client.channels.create(
             name=ChannelName(f'{row['Name']}_calc'),
             data_type=datatype,
@@ -128,14 +129,14 @@ for _, row in df.iterrows():
     log.info(log_msg)
 
 bb_fu_cmd_chan = client.channels.create(
-    name=ChannelName(FUEL_SOLENOID_NAME + '-CMD'),
+    name=ChannelName(constants.FUEL_SOLENOID_NAME + '-CMD'),
     data_type=sy.DataType.UINT8,
     retrieve_if_name_exists=bool(True),
     virtual=bool(True),
 )
 
 bb_ox_cmd_chan = client.channels.create(
-    name=LOX_SOLENOID_NAME + '-CMD',
+    name=constants.LOX_SOLENOID_NAME + '-CMD',
     data_type=sy.DataType.UINT8,
     retrieve_if_name_exists=True,
     virtual=True,

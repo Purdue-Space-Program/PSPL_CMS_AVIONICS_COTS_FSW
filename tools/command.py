@@ -83,7 +83,7 @@ df = pd.read_excel('tools/CMS_Avionics_Channels.xlsx', 'channels')
 ### TODO: GIVE ME A RETURN TYPE </3
 def send_command(cmd: str, args: list[str] | None = None, sock = None) -> Status:
     cmd = cmd.lower()
-    int_args = [int(a) for a in args] if args else []
+    int_args = [float(a) for a in args] if args else []
 
     cmd_id = commands[cmd][0].value
 
@@ -92,20 +92,23 @@ def send_command(cmd: str, args: list[str] | None = None, sock = None) -> Status
         case Command.SET_FU_UPPER_SETP | Command.SET_FU_LOWER_SETP:
             row = df[df['Name'] == 'PT-FU-201']
             if args:
-                int_args = [(((i - row['Offset']) / row['Slope']) - constants.ADC_V_OFFSET) / constants.ADC_V_SLOPE for i in int_args]
+                print(int_args)
+                int_args = [int(((((i + 46.0258 - 14.7) - row['Offset'].iloc[0]) / row['Slope'].iloc[0]) - constants.ADC_V_OFFSET) / float(constants.ADC_V_SLOPE)) for i in int_args]
+                print(int_args)
         case Command.SET_OX_UPPER_SETP | Command.SET_OX_LOWER_SETP:
             row = df[df['Name'] == 'PT-OX-201']
             if args:
-                int_args = [(((i - row['Offset']) / row['Slope']) - constants.ADC_V_OFFSET) / constants.ADC_V_SLOPE for i in int_args]
+                int_args = [int(((((i + 130.582 - 14.7) - row['Offset'].iloc[0]) / row['Slope'].iloc[0]) - constants.ADC_V_OFFSET) / float(constants.ADC_V_SLOPE)) for i in int_args]
 
     packet = pack(commands[cmd.lower()][1], cmd_id, *int_args)
+    print(unpack(commands[cmd.lower()][1], packet))
     if sock:
         sock.send(packet)
 
         val = int.from_bytes(sock.recv(1), byteorder='big')
     else:
         with socket(AF_INET, SOCK_STREAM) as s:
-            s.connect((constants.AVI_IP, constants.AVI_PORT))
+            s.connect((constants.AVI_IP, constants.AVI_CMD_PORT))
 
             s.send(packet)
 
