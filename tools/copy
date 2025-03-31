@@ -1,0 +1,5 @@
+#!/usr/bin/env python3
+
+import subprocess
+
+subprocess.run(["scp", "-P", "9124", "bin/fsw", "tools/fsw_telemetry_server", "root@128.46.118.59:/var/lib"])
