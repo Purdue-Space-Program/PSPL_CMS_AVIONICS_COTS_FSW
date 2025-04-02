@@ -1,6 +1,7 @@
 #include <cstdio>
 #include <chrono>
 #include <thread>
+#include <iomanip>
 #include <iostream>
 
 extern "C" {
@@ -66,7 +67,6 @@ void* command_handler(void* arg) {
                 case Command::Commands::SET_FU_UPPER_SETP: {
                     uint64_t temp;
                     ssize_t bytes_read = read(cmd_client_sock, &temp, sizeof(BB_State::bb_fu_upper_setp));
-                    std::cout << temp << std::endl;
 
                     if (bytes_read < static_cast<ssize_t>(sizeof(BB_State::bb_fu_upper_setp))) {
                         status = Command::Status::NOT_ENOUGH_ARGS;
@@ -182,15 +182,27 @@ void* command_handler(void* arg) {
                     break;
                 }
                 case Command::Commands::NOOP: {
-                    puts("this is not an operation");
+                    auto now_time = system_clock::to_time_t(system_clock::now());
+                    std::tm* now_tm = std::localtime(&now_time);
+                    std::cout << "NOOP command received at " 
+                              << std::put_time(now_tm, "%Y-%m-%d %H:%M:%S")
+                              << std::endl;
                     break;
                 }
                 case Command::Commands::START: {
-                    std::cout << "START command received at " << time_point_cast<std::chrono::microseconds>(std::chrono::steady_clock::now()).time_since_epoch() << std::endl;
+                    auto now_time = system_clock::to_time_t(system_clock::now());
+                    std::tm* now_tm = std::localtime(&now_time);
+                    std::cout << "START command received at " 
+                              << std::put_time(now_tm, "%Y-%m-%d %H:%M:%S")
+                              << std::endl;
                     break;
                 }
                 case Command::Commands::ABORT: {
-                    std::cout << "ABORT command received at " << time_point_cast<std::chrono::microseconds>(std::chrono::steady_clock::now()).time_since_epoch() << std::endl;
+                    auto now_time = system_clock::to_time_t(system_clock::now());
+                    std::tm* now_tm = std::localtime(&now_time);
+                    std::cout << "ABORT command received at " 
+                              << std::put_time(now_tm, "%Y-%m-%d %H:%M:%S")
+                              << std::endl;
                     break;
                 }
                 default: status = Command::Status::UNRECOGNIZED_COMMAND;
