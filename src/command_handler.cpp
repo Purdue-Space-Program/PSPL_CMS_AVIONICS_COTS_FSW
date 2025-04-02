@@ -205,6 +205,66 @@ void* command_handler(void* arg) {
                               << std::endl;
                     break;
                 }
+                case Command::Commands::SET_FU_UPPER_REDLINE: {
+                    uint64_t temp;
+                    ssize_t bytes_read = read(cmd_client_sock, &temp, sizeof(BB_State::bb_fu_upper_redline));
+
+                    if (bytes_read < static_cast<ssize_t>(sizeof(BB_State::bb_fu_upper_redline))) {
+                        status = Command::Status::NOT_ENOUGH_ARGS;
+                    } else if (bytes_read > static_cast<ssize_t>(sizeof(BB_State::bb_fu_upper_redline))) {
+                        status = Command::Status::TOO_MANY_ARGS;
+                    } else {
+                        Telemetry::state_mutex.lock();
+                        BB_State::bb_fu_upper_redline = temp;
+                        Telemetry::state_mutex.unlock();
+                    }
+                    break;
+                }
+                case Command::Commands::SET_FU_LOWER_REDLINE: {
+                    uint64_t temp;
+                    ssize_t bytes_read = read(cmd_client_sock, &temp, sizeof(BB_State::bb_fu_lower_redline));
+
+                    if (bytes_read < static_cast<ssize_t>(sizeof(BB_State::bb_fu_lower_redline))) {
+                        status = Command::Status::NOT_ENOUGH_ARGS;
+                    } else if (bytes_read > static_cast<ssize_t>(sizeof(BB_State::bb_fu_lower_redline))) {
+                        status = Command::Status::TOO_MANY_ARGS;
+                    } else {
+                        Telemetry::state_mutex.lock();
+                        BB_State::bb_fu_lower_redline = temp;
+                        Telemetry::state_mutex.unlock();
+                    }
+                    break;
+                }
+                case Command::Commands::SET_OX_UPPER_REDLINE: {
+                    uint64_t temp;
+                    ssize_t bytes_read = read(cmd_client_sock, &temp, sizeof(BB_State::bb_ox_upper_redline));
+
+                    if (bytes_read < static_cast<ssize_t>(sizeof(BB_State::bb_ox_upper_redline))) {
+                        status = Command::Status::NOT_ENOUGH_ARGS;
+                    } else if (bytes_read > static_cast<ssize_t>(sizeof(BB_State::bb_ox_upper_redline))) {
+                        status = Command::Status::TOO_MANY_ARGS;
+                    } else {
+                        Telemetry::state_mutex.lock();
+                        BB_State::bb_ox_upper_redline = temp;
+                        Telemetry::state_mutex.unlock();
+                    }
+                    break;
+                }
+                case Command::Commands::SET_OX_LOWER_REDLINE: {
+                    uint64_t temp;
+                    ssize_t bytes_read = read(cmd_client_sock, &temp, sizeof(BB_State::bb_ox_lower_redline));
+
+                    if (bytes_read < static_cast<ssize_t>(sizeof(BB_State::bb_ox_lower_redline))) {
+                        status = Command::Status::NOT_ENOUGH_ARGS;
+                    } else if (bytes_read > static_cast<ssize_t>(sizeof(BB_State::bb_ox_lower_redline))) {
+                        status = Command::Status::TOO_MANY_ARGS;
+                    } else {
+                        Telemetry::state_mutex.lock();
+                        BB_State::bb_ox_lower_redline = temp;
+                        Telemetry::state_mutex.unlock();
+                    }
+                    break;
+                }
                 default: status = Command::Status::UNRECOGNIZED_COMMAND;
             }
 

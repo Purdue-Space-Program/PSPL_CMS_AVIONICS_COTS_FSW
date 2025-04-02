@@ -66,9 +66,13 @@ namespace Telemetry {
     constexpr uint8_t CHANNEL_BB_OX_UPPER_SETP   = 15;
     constexpr uint8_t CHANNEL_BB_FU_LOWER_SETP   = 16;
     constexpr uint8_t CHANNEL_BB_OX_LOWER_SETP   = 17;
-    constexpr uint8_t NUM_STATE_CHANNELS = 8;
+    constexpr uint8_t CHANNEL_BB_FU_UPPER_REDLINE   = 18;
+    constexpr uint8_t CHANNEL_BB_OX_UPPER_REDLINE   = 19;
+    constexpr uint8_t CHANNEL_BB_FU_LOWER_REDLINE   = 20;
+    constexpr uint8_t CHANNEL_BB_OX_LOWER_REDLINE   = 21;
+    constexpr uint8_t NUM_STATE_CHANNELS = 12;
 
-    constexpr uint8_t CHANNEL_FREE_SPACE = 18;
+    constexpr uint8_t CHANNEL_FREE_SPACE = 22;
 
     constexpr uint8_t AI_TICK_RATE_MS = 5;
     constexpr uint8_t STATE_TICK_RATE_MS = 20;
