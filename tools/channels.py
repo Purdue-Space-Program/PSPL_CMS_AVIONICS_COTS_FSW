@@ -128,18 +128,21 @@ for _, row in df.iterrows():
         log_msg += f'\n\tCalculated:    {expr}'
     log.info(log_msg)
 
-bb_fu_cmd_chan = client.channels.create(
-    name=ChannelName(constants.FUEL_SOLENOID_NAME + '-CMD'),
-    data_type=sy.DataType.UINT8,
-    retrieve_if_name_exists=bool(True),
-    virtual=bool(True),
-)
+command_channels = [
+    constants.FUEL_SOLENOID_NAME + '-CMD',
+    constants.LOX_SOLENOID_NAME + '-CMD',
+    constants.BB_OPEN_CHANNEL_NAME,
+    constants.BB_ISO_CHANNEL_NAME,
+    constants.BB_REG_CHANNEL_NAME,
+]
 
-bb_ox_cmd_chan = client.channels.create(
-    name=constants.LOX_SOLENOID_NAME + '-CMD',
-    data_type=sy.DataType.UINT8,
-    retrieve_if_name_exists=True,
-    virtual=True,
-)
+for ch in command_channels:
+    client.channels.create(
+        name=ch,
+        data_type=sy.DataType.UINT8,
+        retrieve_if_name_exists=bool(True),
+        virtual=bool(True),
+    )
+    log.info(f' Added command channel: {ch}\t')
 
 client.close()
