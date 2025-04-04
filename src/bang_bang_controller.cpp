@@ -68,14 +68,6 @@ void* bang_bang_controller(void* arg) {
         // find new FU state
         switch (curr_fu_state) {
             case State::REGULATE: {
-                if ((curr_fu_pressure >= curr_fu_upper_redline) ||
-                    (curr_fu_pressure <= curr_fu_lower_redline)) {
-                    curr_fu_pos = BB_Constants::BB_CLOSE;
-                    curr_ox_pos = BB_Constants::BB_CLOSE;
-                    curr_fu_state = State::ISOLATE;
-                    curr_ox_state = State::ISOLATE;
-                    break;
-                }
 
                 if ((curr_fu_pressure >= curr_fu_upper_setp)) {
                     intended_fu_pos = BB_Constants::BB_CLOSE;
@@ -97,14 +89,6 @@ void* bang_bang_controller(void* arg) {
         // Find new OX state
         switch (curr_ox_state) {
             case State::REGULATE: {
-                if ((curr_ox_pressure >= curr_ox_upper_redline) ||
-                    (curr_ox_pressure <= curr_ox_lower_redline)) {
-                    curr_ox_pos = BB_Constants::BB_CLOSE;
-                    curr_fu_pos = BB_Constants::BB_CLOSE;
-                    curr_ox_state = State::ISOLATE;
-                    curr_fu_state = State::ISOLATE;
-                    break;
-                }
 
                 if ((curr_ox_pressure >= curr_ox_upper_setp)) {
                     intended_ox_pos = BB_Constants::BB_CLOSE;
@@ -131,6 +115,16 @@ void* bang_bang_controller(void* arg) {
         if (now >= (ox_last_set + milliseconds(BB_Constants::OX_MIN_RATE_MS)) && curr_ox_pos != intended_ox_pos) {
             curr_ox_pos = intended_ox_pos;
             ox_last_set = now;
+        }
+
+        if ((curr_fu_pressure >= curr_fu_upper_redline) ||
+            (curr_fu_pressure <= curr_fu_lower_redline) ||
+            (curr_ox_pressure >= curr_ox_upper_redline) ||
+            (curr_ox_pressure <= curr_ox_lower_redline)) {
+            curr_fu_pos = BB_Constants::BB_CLOSE;
+            curr_ox_pos = BB_Constants::BB_CLOSE;
+            curr_fu_state = State::ISOLATE;
+            curr_ox_state = State::ISOLATE;
         }
 
         fsw_gpio_set_fu(static_cast<int>(curr_fu_pos));
