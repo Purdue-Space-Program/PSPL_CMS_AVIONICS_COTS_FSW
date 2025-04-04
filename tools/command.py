@@ -22,6 +22,10 @@ class Command(IntEnum):
     NOOP  = 13
     START = 14
     ABORT = 15
+    SET_FU_UPPER_REDLINE = 16
+    SET_FU_LOWER_REDLINE = 17
+    SET_OX_UPPER_REDLINE = 18
+    SET_OX_LOWER_REDLINE = 19
 
 class Status(IntEnum):
     SUCCESS = 0
@@ -80,7 +84,6 @@ def print_help() -> None:
 
 df = pd.read_excel('tools/CMS_Avionics_Channels.xlsx', 'channels')
 
-### TODO: GIVE ME A RETURN TYPE </3
 def send_command(cmd: str, args: list[str] | None = None, sock = None) -> Status:
     cmd = cmd.lower()
     int_args = [float(a) for a in args] if args else []
@@ -89,14 +92,14 @@ def send_command(cmd: str, args: list[str] | None = None, sock = None) -> Status
 
     # THIS SHIT IS INCORRECT ACTUALLY, WE NEED TO SEND THE ADC VALUE AND REVERSE THE CONVERSION FUUUUCK
     match Command(cmd_id):
-        case Command.SET_FU_UPPER_SETP | Command.SET_FU_LOWER_SETP:
+        case Command.SET_FU_UPPER_SETP | Command.SET_FU_LOWER_SETP | Command.SET_FU_UPPER_REDLINE | Command.SET_FU_LOWER_REDLINE:
             row = df[df['Name'] == 'PT-FU-201']
             if args:
-                int_args = [int(((((i + 46.0258 - 14.7) - row['Offset'].iloc[0]) / row['Slope'].iloc[0]) - constants.ADC_V_OFFSET) / float(constants.ADC_V_SLOPE)) for i in int_args]
-        case Command.SET_OX_UPPER_SETP | Command.SET_OX_LOWER_SETP:
+                int_args = [int(((((i + 46.0258 - 14.7 - 8.3) - row['Offset'].iloc[0]) / row['Slope'].iloc[0]) - constants.ADC_V_OFFSET) / float(constants.ADC_V_SLOPE)) for i in int_args]
+        case Command.SET_OX_UPPER_SETP | Command.SET_OX_LOWER_SETP | Command.SET_OX_UPPER_REDLINE | Command.SET_OX_LOWER_REDLINE:
             row = df[df['Name'] == 'PT-OX-201']
             if args:
-                int_args = [int(((((i + 130.582 - 14.7) - row['Offset'].iloc[0]) / row['Slope'].iloc[0]) - constants.ADC_V_OFFSET) / float(constants.ADC_V_SLOPE)) for i in int_args]
+                int_args = [int(((((i + 47.0573 - 14.7 - 8.3) - row['Offset'].iloc[0]) / row['Slope'].iloc[0]) - constants.ADC_V_OFFSET) / float(constants.ADC_V_SLOPE)) for i in int_args]
 
     packet = pack(commands[cmd.lower()][1], cmd_id, *int_args)
     print(unpack(commands[cmd.lower()][1], packet))

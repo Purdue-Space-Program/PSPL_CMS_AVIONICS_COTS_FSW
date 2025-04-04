@@ -26,6 +26,11 @@ namespace BB_State {
     extern uint64_t bb_fu_lower_setp;
     extern uint64_t bb_ox_upper_setp;
     extern uint64_t bb_ox_lower_setp;
+    
+    extern uint64_t bb_fu_upper_redline;
+    extern uint64_t bb_fu_lower_redline;
+    extern uint64_t bb_ox_upper_redline;
+    extern uint64_t bb_ox_lower_redline;
 }
 
 // Sensor State

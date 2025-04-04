@@ -10,6 +10,7 @@ extern "C" {
 
 #include <chrono>
 #include <thread>
+#include <cstdint>
 
 using namespace BB_State;
 using namespace std::chrono;
@@ -19,10 +20,15 @@ State BB_State::bb_ox_state = State::ISOLATE;
 uint64_t   BB_State::bb_fu_pos   = BB_Constants::BB_CLOSE;
 uint64_t   BB_State::bb_ox_pos   = BB_Constants::BB_CLOSE;
 
-uint64_t BB_State::bb_fu_upper_setp = 305 * 1000000;
-uint64_t BB_State::bb_fu_lower_setp = 295 * 1000000;
-uint64_t BB_State::bb_ox_upper_setp = 310 * 1000000;
-uint64_t BB_State::bb_ox_lower_setp = 305 * 1000000;
+// default values are intended to have no effect
+uint64_t BB_State::bb_fu_upper_setp = UINT64_MAX;
+uint64_t BB_State::bb_fu_lower_setp = 0;
+uint64_t BB_State::bb_ox_upper_setp = UINT64_MAX;
+uint64_t BB_State::bb_ox_lower_setp = 0;
+uint64_t BB_State::bb_fu_upper_redline = UINT64_MAX;
+uint64_t BB_State::bb_fu_lower_redline = 0;
+uint64_t BB_State::bb_ox_upper_redline = UINT64_MAX;
+uint64_t BB_State::bb_ox_lower_redline = 0;
 
 void* bang_bang_controller(void* arg) {
     sem_wait(&start_sem);
@@ -45,20 +51,29 @@ void* bang_bang_controller(void* arg) {
         Telemetry::state_mutex.lock();
         uint64_t curr_fu_pressure = Telemetry::fu_pressure;
         uint64_t curr_ox_pressure = Telemetry::ox_pressure;
-        State curr_fu_state  = bb_fu_state;
-        State curr_ox_state  = bb_ox_state;
+        State    curr_fu_state = bb_fu_state;
+        State    curr_ox_state = bb_ox_state;
+        uint64_t curr_fu_pos = bb_fu_pos;
+        uint64_t curr_ox_pos = bb_ox_pos;
+        uint64_t curr_fu_upper_setp = bb_fu_upper_setp;
+        uint64_t curr_fu_lower_setp = bb_fu_lower_setp;
+        uint64_t curr_ox_upper_setp = bb_ox_upper_setp;
+        uint64_t curr_ox_lower_setp = bb_ox_lower_setp;
+        uint64_t curr_fu_upper_redline = bb_fu_upper_redline;
+        uint64_t curr_fu_lower_redline = bb_fu_lower_redline;
+        uint64_t curr_ox_upper_redline = bb_ox_upper_redline;
+        uint64_t curr_ox_lower_redline = bb_ox_lower_redline;
         Telemetry::state_mutex.unlock();
 
         // find new FU state
         switch (curr_fu_state) {
             case State::REGULATE: {
-                Telemetry::state_mutex.lock();
-                if ((curr_fu_pressure >= bb_fu_upper_setp)) {
+
+                if ((curr_fu_pressure >= curr_fu_upper_setp)) {
                     intended_fu_pos = BB_Constants::BB_CLOSE;
-                } else if (curr_fu_pressure <= bb_fu_lower_setp) {
+                } else if (curr_fu_pressure <= curr_fu_lower_setp) {
                     intended_fu_pos = BB_Constants::BB_OPEN;
                 }
-                Telemetry::state_mutex.unlock();
                 break;
             }
             case State::ISOLATE: {
@@ -74,13 +89,12 @@ void* bang_bang_controller(void* arg) {
         // Find new OX state
         switch (curr_ox_state) {
             case State::REGULATE: {
-                Telemetry::state_mutex.lock();
-                if ((curr_ox_pressure >= bb_ox_upper_setp)) {
+
+                if ((curr_ox_pressure >= curr_ox_upper_setp)) {
                     intended_ox_pos = BB_Constants::BB_CLOSE;
-                } else if (curr_ox_pressure <= bb_ox_lower_setp) {
+                } else if (curr_ox_pressure <= curr_ox_lower_setp) {
                     intended_ox_pos = BB_Constants::BB_OPEN;
                 }
-                Telemetry::state_mutex.unlock();
                 break;
             }
             case State::ISOLATE: {
@@ -93,23 +107,34 @@ void* bang_bang_controller(void* arg) {
             }
         }
 
-        Telemetry::state_mutex.lock();
-        if (now >= (fu_last_set + milliseconds(BB_Constants::FU_MIN_RATE_MS)) && bb_fu_pos != intended_fu_pos) {
-            bb_fu_pos   = intended_fu_pos;
+        if (now >= (fu_last_set + milliseconds(BB_Constants::FU_MIN_RATE_MS)) && curr_fu_pos != intended_fu_pos) {
+            curr_fu_pos = intended_fu_pos;
             fu_last_set = now;
         }
 
-        if (now >= (ox_last_set + milliseconds(BB_Constants::OX_MIN_RATE_MS)) && bb_ox_pos != intended_ox_pos) {
-            bb_ox_pos   = intended_ox_pos;
+        if (now >= (ox_last_set + milliseconds(BB_Constants::OX_MIN_RATE_MS)) && curr_ox_pos != intended_ox_pos) {
+            curr_ox_pos = intended_ox_pos;
             ox_last_set = now;
         }
 
-        if (fsw_gpio_set_fu(static_cast<int>(bb_fu_pos)) < 0) {
-            // TODO: FDIR
+        if ((curr_fu_pressure >= curr_fu_upper_redline) ||
+            (curr_fu_pressure <= curr_fu_lower_redline) ||
+            (curr_ox_pressure >= curr_ox_upper_redline) ||
+            (curr_ox_pressure <= curr_ox_lower_redline)) {
+            curr_fu_pos = BB_Constants::BB_CLOSE;
+            curr_ox_pos = BB_Constants::BB_CLOSE;
+            curr_fu_state = State::ISOLATE;
+            curr_ox_state = State::ISOLATE;
         }
-        if (fsw_gpio_set_ox(static_cast<int>(bb_ox_pos)) < 0) {
-            // TODO: FDIR
-        }
+
+        fsw_gpio_set_fu(static_cast<int>(curr_fu_pos));
+        fsw_gpio_set_ox(static_cast<int>(curr_ox_pos));
+
+        Telemetry::state_mutex.lock();
+        bb_fu_pos   = curr_fu_pos;
+        bb_ox_pos   = curr_ox_pos;
+        bb_fu_state = curr_fu_state;
+        bb_ox_state = curr_ox_state;
         Telemetry::state_mutex.unlock();
 
         std::this_thread::sleep_until(now + milliseconds(BB_Constants::TICK_RATE_MS));
