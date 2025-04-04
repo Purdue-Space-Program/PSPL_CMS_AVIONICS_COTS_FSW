@@ -92,9 +92,7 @@ def send_command(cmd: str, args: list[str] | None = None, sock = None) -> Status
         case Command.SET_FU_UPPER_SETP | Command.SET_FU_LOWER_SETP:
             row = df[df['Name'] == 'PT-FU-201']
             if args:
-                print(int_args)
                 int_args = [int(((((i + 46.0258 - 14.7) - row['Offset'].iloc[0]) / row['Slope'].iloc[0]) - constants.ADC_V_OFFSET) / float(constants.ADC_V_SLOPE)) for i in int_args]
-                print(int_args)
         case Command.SET_OX_UPPER_SETP | Command.SET_OX_LOWER_SETP:
             row = df[df['Name'] == 'PT-OX-201']
             if args:
