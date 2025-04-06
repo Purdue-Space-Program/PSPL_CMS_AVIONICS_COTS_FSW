@@ -21,6 +21,14 @@ channels = [
     constants.BB_OPEN_CHANNEL_NAME,
     constants.BB_ISO_CHANNEL_NAME,
     constants.BB_REG_CHANNEL_NAME,
+    constants.BB_FU_UPPER_SETP_NAME,
+    constants.BB_OX_UPPER_SETP_NAME,
+    constants.BB_FU_LOWER_SETP_NAME,
+    constants.BB_OX_LOWER_SETP_NAME,
+    constants.BB_FU_UPPER_REDLINE_NAME,
+    constants.BB_OX_UPPER_REDLINE_NAME,
+    constants.BB_FU_LOWER_REDLINE_NAME,
+    constants.BB_OX_LOWER_REDLINE_NAME,
 ]
 
 if __name__ == '__main__':
@@ -42,13 +50,37 @@ if __name__ == '__main__':
                     log.info(' Lox: CLOSE')
             for f in frame[constants.BB_OPEN_CHANNEL_NAME]:
                 if f == 1:
-                    # cmd.send_command(cmd.Command.SET_BB_STATE_OPEN.name)
+                    cmd.send_command(cmd.Command.SET_BB_STATE_OPEN.name)
                     log.info(' Open all')
             for f in frame[constants.BB_ISO_CHANNEL_NAME]:
                 if f == 1:
-                    # cmd.send_command(cmd.Command.SET_BB_STATE_ISOLATE.name)
+                    cmd.send_command(cmd.Command.SET_BB_STATE_ISOLATE.name)
                     log.info(' Isolate all')
             for f in frame[constants.BB_REG_CHANNEL_NAME]:
                 if f == 1:
-                    # cmd.send_command(cmd.Command.SET_BB_STATE_REGULATE.name)
+                    cmd.send_command(cmd.Command.SET_BB_STATE_REGULATE.name)
                     log.info(' Regulate all')
+            for f in frame[constants.BB_FU_UPPER_SETP_NAME]:
+                cmd.send_command(cmd.Command.SET_FU_UPPER_SETP.name, float(f))
+                log.info(f' Set upper fuel setpoint to {f}')
+            for f in frame[constants.BB_OX_UPPER_SETP_NAME]:
+                cmd.send_command(cmd.Command.SET_OX_UPPER_SETP.name, float(f))
+                log.info(f' Set upper lox setpoint to {f}')
+            for f in frame[constants.BB_FU_LOWER_SETP_NAME]:
+                cmd.send_command(cmd.Command.SET_FU_LOWER_SETP.name, float(f))
+                log.info(f' Set upper fuel setpoint to {f}')
+            for f in frame[constants.BB_OX_LOWER_SETP_NAME]:
+                cmd.send_command(cmd.Command.SET_OX_LOWER_SETP.name, float(f))
+                log.info(f' Set upper lox setpoint to {f}')
+            for f in frame[constants.BB_FU_UPPER_REDLINE_NAME]:
+                cmd.send_command(cmd.Command.SET_FU_UPPER_REDLINE.name, float(f))
+                log.info(f' Set upper fuel setpoint to {f}')
+            for f in frame[constants.BB_OX_UPPER_REDLINE_NAME]:
+                cmd.send_command(cmd.Command.SET_OX_UPPER_REDLINE.name, float(f))
+                log.info(f' Set upper lox setpoint to {f}')
+            for f in frame[constants.BB_FU_LOWER_REDLINE_NAME]:
+                cmd.send_command(cmd.Command.SET_FU_LOWER_REDLINE.name, float(f))
+                log.info(f' Set upper fuel setpoint to {f}')
+            for f in frame[constants.BB_OX_LOWER_REDLINE_NAME]:
+                cmd.send_command(cmd.Command.SET_OX_LOWER_REDLINE.name, float(f))
+                log.info(f' Set upper lox setpoint to {f}')

@@ -134,6 +134,14 @@ command_channels = [
     constants.BB_OPEN_CHANNEL_NAME,
     constants.BB_ISO_CHANNEL_NAME,
     constants.BB_REG_CHANNEL_NAME,
+    constants.BB_FU_UPPER_SETP_NAME,
+    constants.BB_OX_UPPER_SETP_NAME,
+    constants.BB_FU_LOWER_SETP_NAME,
+    constants.BB_OX_LOWER_SETP_NAME,
+    constants.BB_FU_UPPER_REDLINE_NAME,
+    constants.BB_OX_UPPER_REDLINE_NAME,
+    constants.BB_FU_LOWER_REDLINE_NAME,
+    constants.BB_OX_LOWER_REDLINE_NAME,
 ]
 
 for ch in command_channels:
