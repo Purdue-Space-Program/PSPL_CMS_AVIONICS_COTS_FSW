@@ -12,6 +12,8 @@ extern "C" {
 #include <thread>
 #include <cstdint>
 
+#define AVERAGE_WINDOW 5
+
 using namespace BB_State;
 using namespace std::chrono;
 
@@ -45,12 +47,33 @@ void* bang_bang_controller(void* arg) {
     uint64_t intended_fu_pos = BB_Constants::BB_CLOSE;
     uint64_t intended_ox_pos = BB_Constants::BB_CLOSE;
 
+    uint64_t count = 0;
+    uint64_t fu_sum = 0;
+    uint64_t ox_sum = 0;
+    uint64_t fu_data[AVERAGE_WINDOW] = { 0 };
+    uint64_t ox_data[AVERAGE_WINDOW] = { 0 };
+
     while (true) {
         auto now = steady_clock::now();
 
         Telemetry::state_mutex.lock();
-        uint64_t curr_fu_pressure = Telemetry::fu_pressure;
-        uint64_t curr_ox_pressure = Telemetry::ox_pressure;
+        size_t index = count % AVERAGE_WINDOW;
+        // mark first branch as cold because it only occurs for the first AVERAGE_WINDOW values
+        if (__builtin_expect(count < AVERAGE_WINDOW, 0)) {
+            fu_data[index] = Telemetry::fu_pressure;
+            ox_data[index] = Telemetry::ox_pressure;
+            fu_sum += Telemetry::fu_pressure;
+            ox_sum += Telemetry::ox_pressure;
+        } else {
+            fu_sum = fu_sum - fu_data[index] + Telemetry::fu_pressure;
+            ox_sum = ox_sum - ox_data[index] + Telemetry::ox_pressure;
+            fu_data[index] = Telemetry::fu_pressure;
+            ox_data[index] = Telemetry::ox_pressure;
+        }
+        uint64_t curr_fu_pressure = fu_sum / AVERAGE_WINDOW;
+        uint64_t curr_ox_pressure = ox_sum / AVERAGE_WINDOW;
+        count += 1;
+
         State    curr_fu_state = bb_fu_state;
         State    curr_ox_state = bb_ox_state;
         uint64_t curr_fu_pos = bb_fu_pos;

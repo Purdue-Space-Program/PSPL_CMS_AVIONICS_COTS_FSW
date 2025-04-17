@@ -61,26 +61,26 @@ if __name__ == '__main__':
                     cmd.send_command(cmd.Command.SET_BB_STATE_REGULATE.name)
                     log.info(' Regulate all')
             for f in frame[constants.BB_FU_UPPER_SETP_NAME]:
-                cmd.send_command(cmd.Command.SET_FU_UPPER_SETP.name, float(f))
+                cmd.send_command(cmd.Command.SET_FU_UPPER_SETP.name, [float(f)])
                 log.info(f' Set upper fuel setpoint to {f}')
             for f in frame[constants.BB_OX_UPPER_SETP_NAME]:
-                cmd.send_command(cmd.Command.SET_OX_UPPER_SETP.name, float(f))
+                cmd.send_command(cmd.Command.SET_OX_UPPER_SETP.name, [float(f)])
                 log.info(f' Set upper lox setpoint to {f}')
             for f in frame[constants.BB_FU_LOWER_SETP_NAME]:
-                cmd.send_command(cmd.Command.SET_FU_LOWER_SETP.name, float(f))
+                cmd.send_command(cmd.Command.SET_FU_LOWER_SETP.name, [float(f)])
                 log.info(f' Set upper fuel setpoint to {f}')
             for f in frame[constants.BB_OX_LOWER_SETP_NAME]:
-                cmd.send_command(cmd.Command.SET_OX_LOWER_SETP.name, float(f))
+                cmd.send_command(cmd.Command.SET_OX_LOWER_SETP.name, [float(f)])
                 log.info(f' Set upper lox setpoint to {f}')
             for f in frame[constants.BB_FU_UPPER_REDLINE_NAME]:
-                cmd.send_command(cmd.Command.SET_FU_UPPER_REDLINE.name, float(f))
+                cmd.send_command(cmd.Command.SET_FU_UPPER_REDLINE.name, [float(f)])
                 log.info(f' Set upper fuel setpoint to {f}')
             for f in frame[constants.BB_OX_UPPER_REDLINE_NAME]:
-                cmd.send_command(cmd.Command.SET_OX_UPPER_REDLINE.name, float(f))
+                cmd.send_command(cmd.Command.SET_OX_UPPER_REDLINE.name, [float(f)])
                 log.info(f' Set upper lox setpoint to {f}')
             for f in frame[constants.BB_FU_LOWER_REDLINE_NAME]:
-                cmd.send_command(cmd.Command.SET_FU_LOWER_REDLINE.name, float(f))
+                cmd.send_command(cmd.Command.SET_FU_LOWER_REDLINE.name, [float(f)])
                 log.info(f' Set upper fuel setpoint to {f}')
             for f in frame[constants.BB_OX_LOWER_REDLINE_NAME]:
-                cmd.send_command(cmd.Command.SET_OX_LOWER_REDLINE.name, float(f))
+                cmd.send_command(cmd.Command.SET_OX_LOWER_REDLINE.name, [float(f)])
                 log.info(f' Set upper lox setpoint to {f}')

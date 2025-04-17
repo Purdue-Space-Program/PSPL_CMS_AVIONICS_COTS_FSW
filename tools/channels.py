@@ -147,7 +147,8 @@ command_channels = [
 for ch in command_channels:
     client.channels.create(
         name=ch,
-        data_type=sy.DataType.UINT8,
+        # bitch ass uint8 will not work for setpoint channel type shit
+        data_type=sy.DataType.UINT16,
         retrieve_if_name_exists=bool(True),
         virtual=bool(True),
     )

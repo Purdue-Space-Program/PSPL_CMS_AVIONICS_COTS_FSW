@@ -55,6 +55,12 @@ command_fmts = {
     Command.SET_BB_STATE_ISOLATE:  FORMAT_NO_ARGS,
     Command.SET_BB_STATE_OPEN:     FORMAT_NO_ARGS,
     Command.NOOP:                  FORMAT_NO_ARGS,
+    Command.START:                 FORMAT_NO_ARGS,
+    Command.ABORT:                 FORMAT_NO_ARGS,
+    Command.SET_FU_UPPER_REDLINE: FORMAT_1_ARG,
+    Command.SET_FU_LOWER_REDLINE: FORMAT_1_ARG,
+    Command.SET_OX_UPPER_REDLINE: FORMAT_1_ARG,
+    Command.SET_OX_LOWER_REDLINE: FORMAT_1_ARG,
 }
 
 commands = { cmd.name.lower(): (cmd, command_fmts[cmd]) for cmd in command_fmts }
@@ -90,7 +96,6 @@ def send_command(cmd: str, args: list[str] | None = None, sock = None) -> Status
 
     cmd_id = commands[cmd][0].value
 
-    # THIS SHIT IS INCORRECT ACTUALLY, WE NEED TO SEND THE ADC VALUE AND REVERSE THE CONVERSION FUUUUCK
     match Command(cmd_id):
         case Command.SET_FU_UPPER_SETP | Command.SET_FU_LOWER_SETP | Command.SET_FU_UPPER_REDLINE | Command.SET_FU_LOWER_REDLINE:
             row = df[df['Name'] == 'PT-FU-201']
@@ -102,7 +107,6 @@ def send_command(cmd: str, args: list[str] | None = None, sock = None) -> Status
                 int_args = [int(((((i + 47.0573 - 14.7 - 8.3) - row['Offset'].iloc[0]) / row['Slope'].iloc[0]) - constants.ADC_V_OFFSET) / float(constants.ADC_V_SLOPE)) for i in int_args]
 
     packet = pack(commands[cmd.lower()][1], cmd_id, *int_args)
-    print(unpack(commands[cmd.lower()][1], packet))
     if sock:
         sock.send(packet)
 
