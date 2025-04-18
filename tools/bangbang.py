@@ -1,18 +1,9 @@
-import synnax as sy
 import command as cmd
 import constants
-# necessary to add channels
-# import channels
-import logging
-log = logging.getLogger(' Bang Bang GSE')
-logging.basicConfig(level=logging.INFO)
+from utils import get_logger, get_synnax_client
+log = get_logger('Command Proxy')
 
-client = sy.Synnax(
-    host=constants.SYNNAX_IP,
-    port=constants.SYNNAX_PORT,
-    username='Bill',
-    password='Bill',
-)
+client = get_synnax_client()
 log.info(f' Connected to Synnax at {constants.SYNNAX_IP}:{constants.SYNNAX_PORT}')
 
 channels = [

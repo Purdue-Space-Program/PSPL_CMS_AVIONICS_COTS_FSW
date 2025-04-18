@@ -1,13 +1,14 @@
 from socket import socket, AF_INET, SOCK_STREAM
-from struct import unpack, calcsize
+from struct import unpack
 from enum import IntEnum
 import constants
+from constants import TELEM_FORMAT, TELEM_SIZE, SYNNAX_IP, SYNNAX_PORT, AVI_IP, AVI_CMD_PORT, AVI_TELEM_PORT
 
 import pandas as pd
 import synnax as sy
-import logging
-log = logging.getLogger(' Telemetry Client')
-logging.basicConfig(level=logging.INFO)
+
+from utils import get_logger, get_synnax_client, get_telem_configs
+log = get_logger('Telemtry')
 
 class Channel(IntEnum):
     PT_OX    = 0
@@ -25,25 +26,17 @@ class Channel(IntEnum):
     BB_OX_LOWER_SETP   = 17
     FREE_SPACE = 18
 
-TELEM_FORMAT = '<QQQ'
-TELEM_SIZE   = calcsize(TELEM_FORMAT)
 
-df = pd.read_excel('tools/CMS_Avionics_Channels.xlsx', sheet_name='channels')
+df = get_telem_configs()
 channels = [item for name in df['Name'] for item in [name, f'{name}_time']]
 
-client = sy.Synnax(
-    host=constants.SYNNAX_IP,
-    port=constants.SYNNAX_PORT,
-    username="Bill",
-    password="Bill",
-    secure=False,
-)
+client = get_synnax_client()
 log.info(f' Connected to Synnax at {constants.SYNNAX_IP}:{constants.SYNNAX_PORT}')
 
 def main():
     with socket(AF_INET, SOCK_STREAM) as s:
-        s.connect((constants.AVI_IP, constants.AVI_TELEM_PORT))
-        log.info(f' Connected to Avionics system at {constants.AVI_IP}:{constants.AVI_TELEM_PORT}')
+        s.connect((AVI_IP, AVI_TELEM_PORT))
+        log.info(f' Connected to Avionics system at {AVI_IP}:{AVI_TELEM_PORT}')
 
         p = s.recv(TELEM_SIZE)
         dp = unpack(TELEM_FORMAT, p)
