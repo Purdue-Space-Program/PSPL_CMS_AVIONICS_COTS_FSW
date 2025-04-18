@@ -31,7 +31,7 @@ channels = [
     constants.BB_OX_LOWER_REDLINE_NAME,
 ]
 
-if __name__ == '__main__':
+def main():
     with client.open_streamer(channels) as s:
         for frame in s:
             for f in frame[constants.FUEL_SOLENOID_NAME + '-CMD']:
@@ -84,3 +84,6 @@ if __name__ == '__main__':
             for f in frame[constants.BB_OX_LOWER_REDLINE_NAME]:
                 cmd.send_command(cmd.Command.SET_OX_LOWER_REDLINE.name, [float(f)])
                 log.info(f' Set upper lox setpoint to {f}')
+
+if __name__ == '__main__':
+    main()

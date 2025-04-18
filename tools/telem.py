@@ -40,7 +40,7 @@ client = sy.Synnax(
 )
 log.info(f' Connected to Synnax at {constants.SYNNAX_IP}:{constants.SYNNAX_PORT}')
 
-if __name__ == '__main__':
+def main():
     with socket(AF_INET, SOCK_STREAM) as s:
         s.connect((constants.AVI_IP, constants.AVI_TELEM_PORT))
         log.info(f' Connected to Avionics system at {constants.AVI_IP}:{constants.AVI_TELEM_PORT}')
@@ -86,3 +86,6 @@ if __name__ == '__main__':
             finally:
                 s.close()
                 writer.close()
+
+if __name__ == '__main__':
+    main()
