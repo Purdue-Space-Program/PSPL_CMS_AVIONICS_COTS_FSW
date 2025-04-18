@@ -141,9 +141,7 @@ void* bang_bang_controller(void* arg) {
         }
 
         if ((curr_fu_pressure >= curr_fu_upper_redline) ||
-            (curr_fu_pressure <= curr_fu_lower_redline) ||
-            (curr_ox_pressure >= curr_ox_upper_redline) ||
-            (curr_ox_pressure <= curr_ox_lower_redline)) {
+            (curr_ox_pressure >= curr_ox_upper_redline)) {
             curr_fu_pos = BB_Constants::BB_CLOSE;
             curr_ox_pos = BB_Constants::BB_CLOSE;
             curr_fu_state = State::ISOLATE;
