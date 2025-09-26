@@ -88,3 +88,4 @@ void* bang_bang_controller(void* arg);
 void* command_handler(void* arg);
 void* data_writer(void* arg);
 void* state_writer(void* arg);
+void* server_thread(void* arg);

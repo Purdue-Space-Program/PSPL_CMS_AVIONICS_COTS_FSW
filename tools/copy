@@ -4,7 +4,6 @@ import subprocess
 
 subprocess.run(["scp", "-P", "22", 
                 "bin/fsw", 
-                "tools/fsw_telemetry_server", 
                 "tools/end", 
                 "tools/run", 
                 "root@sedsdaq.ecn.purdue.edu:/var/lib"])

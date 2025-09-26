@@ -3,4 +3,3 @@
 /var/lib/end
 sleep 0.3
 ./fsw &
-./fsw_telemetry_server &

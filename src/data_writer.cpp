@@ -2,6 +2,7 @@
 #include <config.hpp>
 #include <queue.hpp>
 #include <state.hpp>
+#include <telem_server.hpp>
 
 #include <cstdio>
 #include <cstdlib>
@@ -61,10 +62,11 @@ void *data_writer(void *arg) {
         Telemetry::data_queue.dequeue(&packet);
 
         fwrite(&packet, sizeof(packet), 1, file);
+        counter += 1;
         if (counter % 256 == 0) {
             fflush(file);
         }
-        counter += 1;
+        broadcast_packet(packet);
     }
 
     return NULL;
