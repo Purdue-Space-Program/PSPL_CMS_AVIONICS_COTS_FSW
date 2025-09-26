@@ -76,6 +76,8 @@ namespace Telemetry {
 
     constexpr uint8_t CHANNEL_FREE_SPACE = 24;
 
+    constexpr uint8_t CHANNEL_PI_TEMP = 123;
+
     constexpr uint8_t AI_TICK_RATE_MS = 5;
     constexpr uint8_t STATE_TICK_RATE_MS = 20;
     constexpr uint8_t STAT_TICK_RATE_MS  = 100;
@@ -89,3 +91,4 @@ void command_handler();
 void data_writer();
 void state_writer();
 void server_thread();
+void stat();

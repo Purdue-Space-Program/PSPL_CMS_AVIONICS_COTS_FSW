@@ -22,6 +22,7 @@ int main() {
     threads.emplace_back(data_writer);
     threads.emplace_back(state_writer);
     threads.emplace_back(server_thread);
+    threads.emplace_back(stat);
 
     for (auto& t : threads)
     {
