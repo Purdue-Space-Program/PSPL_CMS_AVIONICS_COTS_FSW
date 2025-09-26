@@ -21,9 +21,8 @@ namespace Command {
         START = 14,
         ABORT = 15,
         SET_FU_UPPER_REDLINE = 16,
-        SET_FU_LOWER_REDLINE = 17,
         SET_OX_UPPER_REDLINE = 18,
-        SET_OX_LOWER_REDLINE = 19,
+        REDLINE_RESET    = 25,
     };
 
     enum class Status : uint8_t {

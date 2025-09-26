@@ -26,9 +26,7 @@ uint64_t BB_State::bb_fu_lower_setp = 0;
 uint64_t BB_State::bb_ox_upper_setp = UINT64_MAX;
 uint64_t BB_State::bb_ox_lower_setp = 0;
 uint64_t BB_State::bb_fu_upper_redline = UINT64_MAX;
-uint64_t BB_State::bb_fu_lower_redline = 0;
 uint64_t BB_State::bb_ox_upper_redline = UINT64_MAX;
-uint64_t BB_State::bb_ox_lower_redline = 0;
 
 uint64_t BB_State::fu_upper_redline_hit = false;
 uint64_t BB_State::ox_upper_redline_hit = false;
@@ -66,9 +64,7 @@ void bang_bang_controller() {
         uint64_t curr_ox_upper_setp = bb_ox_upper_setp;
         uint64_t curr_ox_lower_setp = bb_ox_lower_setp;
         uint64_t curr_fu_upper_redline = bb_fu_upper_redline;
-        uint64_t curr_fu_lower_redline = bb_fu_lower_redline;
         uint64_t curr_ox_upper_redline = bb_ox_upper_redline;
-        uint64_t curr_ox_lower_redline = bb_ox_lower_redline;
         Telemetry::state_mutex.unlock();
 
         // find new FU state

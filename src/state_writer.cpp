@@ -25,8 +25,6 @@ volatile uint64_t* state_telemetry[] = {
     &BB_State::bb_ox_lower_setp,
     &BB_State::bb_fu_upper_redline,
     &BB_State::bb_ox_upper_redline,
-    &BB_State::bb_fu_lower_redline,
-    &BB_State::bb_ox_lower_redline,
     &BB_State::fu_upper_redline_hit,
     &BB_State::ox_upper_redline_hit,
 };
