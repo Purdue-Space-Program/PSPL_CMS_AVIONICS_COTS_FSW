@@ -11,7 +11,7 @@ sem_t start_sem;
 int main() {
     sem_init(&start_sem, 0, 0);
 
-    void* (*funcs[])(void*) = { daq, command_handler, bang_bang_controller, data_writer, state_writer };
+    void* (*funcs[])(void*) = { bang_bang_controller, daq, command_handler, data_writer, state_writer };
     pthread_t threads[5] = {0};
 
     for (size_t i = 0; i < 5; i += 1) {

@@ -23,8 +23,8 @@ namespace BB_Constants {
     
     // gpio 8,9,10,11,12,13,26 are in use by the daqhat
     // dont use gpio 14 either idk why
-    constexpr int   BB_FU_GPIO_PIN = 20;
-    constexpr int   BB_OX_GPIO_PIN = 21;
+    constexpr int   BB_FU_GPIO_PIN = 21;
+    constexpr int   BB_OX_GPIO_PIN = 20;
 
     constexpr uint8_t TICK_RATE_MS    = 10;
     constexpr uint8_t FU_MIN_RATE_MS  = 50;
@@ -32,7 +32,7 @@ namespace BB_Constants {
 }
 
 namespace Command {
-    constexpr int CMD_PORT = 1234;
+    constexpr int CMD_PORT = 2703;
     constexpr uint8_t TICK_RATE_MS    = 1;
     constexpr uint8_t SOCK_TIMEOUT_MS = 100;
 }
@@ -45,7 +45,7 @@ namespace Daq {
 }
 
 namespace Telemetry {
-    constexpr int PORT = 25565;
+    constexpr int PORT = 2702;
 
     constexpr uint32_t DATA_QUEUE_LENGTH = 4096;
 
@@ -70,9 +70,11 @@ namespace Telemetry {
     constexpr uint8_t CHANNEL_BB_OX_UPPER_REDLINE   = 19;
     constexpr uint8_t CHANNEL_BB_FU_LOWER_REDLINE   = 20;
     constexpr uint8_t CHANNEL_BB_OX_LOWER_REDLINE   = 21;
-    constexpr uint8_t NUM_STATE_CHANNELS = 12;
+    constexpr uint8_t CHANNEL_BB_FU_UPPER_REDLINE_HIT   = 22;
+    constexpr uint8_t CHANNEL_BB_OX_UPPER_REDLINE_HIT   = 23;
+    constexpr uint8_t NUM_STATE_CHANNELS = 14;
 
-    constexpr uint8_t CHANNEL_FREE_SPACE = 22;
+    constexpr uint8_t CHANNEL_FREE_SPACE = 24;
 
     constexpr uint8_t AI_TICK_RATE_MS = 5;
     constexpr uint8_t STATE_TICK_RATE_MS = 20;

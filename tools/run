@@ -1,54 +1,6 @@
-#!/usr/bin/env python3
+#!/bin/bash
 
-import subprocess
-import sys
-import os
-import logging
-import threading
-
-log = logging.getLogger('GSE Runner')
-logging.basicConfig(level=logging.INFO)
-formatter = logging.Formatter('[%(levelname)s] %(name)s: %(message)s')
-console_handler = logging.StreamHandler()
-console_handler.setFormatter(formatter)
-log.addHandler(console_handler)
-
-def get_venv_python():
-    return os.path.join(os.environ.get('VIRTUAL_ENV', ''), 'bin', 'python3')
-
-def stream_output(proc):
-    """Continuously read a subprocess' stdout and write it to sys.stdout."""
-    for line in iter(proc.stdout.readline, ''):
-        sys.stdout.write(line)
-    proc.stdout.close()
-
-if __name__ == '__main__':
-    commands = [
-        [get_venv_python(), "tools/telem.py"],
-        [get_venv_python(), "tools/bangbang.py"],
-    ]
-
-    processes = []
-    threads = []
-
-    log.info('Starting GSE stack...')
-    # Start all processes and create a thread for each to stream output concurrently.
-    for cmd in commands:
-        proc = subprocess.Popen(
-            cmd,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True
-        )
-        processes.append(proc)
-        t = threading.Thread(target=stream_output, args=(proc,))
-        t.start()
-        threads.append(t)
-
-    # Wait for all output threads to finish.
-    for t in threads:
-        t.join()
-
-    # Ensure all processes have terminated.
-    for proc in processes:
-        proc.wait()
+/var/lib/end
+sleep 0.3
+./fsw &
+./fsw_telemetry_server &

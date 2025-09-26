@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import time
-import shlex
 import struct
 import socket
 import threading
@@ -12,10 +11,8 @@ packet_size = packet_struct.size
 socks = []
 packets = []
 
-
 def make_packet(timestamp, value, sensor_id):
     return packet_struct.pack(timestamp, value, sensor_id)
-
 
 our_sensor_ids = {
     "core_clock": 1000,
@@ -25,96 +22,30 @@ our_sensor_ids = {
     "core_usages": 1200,
 }
 
+def vcgencmd(args: str) -> str:
+    out = subprocess.check_output(["/usr/bin/vcgencmd", *args.split()],
+                                  stderr=subprocess.STDOUT)
+    return out.decode().strip()
 
-def vcgencmd(cmd):
-    try:
-        cmd = ["vcgencmd"] + shlex.split(cmd)
-        return subprocess.check_output(cmd).decode("utf-8").strip()
-    except subprocess.CalledProcessError:
-        return None
-
-
-def get_clock():
-    return int(vcgencmd("measure_clock arm").split("=")[1])
-
-
-def get_temp():
-    """
-    returns core temp in millikelvin
-    """
-    temp = vcgencmd("measure_temp").split("=")[1][:-2]
-    celsius = float(temp)
-    kelvin = celsius + 273.15
-    return int(kelvin * 1000)
-
-
-THROTTLE_TABLE = [
-    (0, "undervoltage"),
-    (1, "freq_capped"),
-    (2, "throttled"),
-    (3, "temp_limit"),
-    (16, "undervoltage_occurred"),
-    (17, "freq_cap_occurred"),
-    (18, "throttle_occurred"),
-    (19, "soft_temp_limit"),
-]
-
-
-def get_throttled():
-    throttled = int(vcgencmd("get_throttled").split("=")[1], 16)
-    out = {}
-    for bit, name in THROTTLE_TABLE:
-        out[name] = bool(throttled & (1 << bit))
-
-    return out
-
-
-def get_mem_usage():
-    """
-    in millipercent (per cent mille, 1/1000 percent)
-    0-1000000 (0-100%)
-    """
-    return int(psutil.virtual_memory().percent * 1000)
-
-
-def get_core_usages():
-    """
-    array of millipercents
-    """
-    return list(map(lambda x: int(x * 1000), psutil.cpu_percent(percpu=True)))
-
+def get_temp_c() -> int:
+    actual_temp = float(vcgencmd("measure_temp").strip("temp=").strip("\'C"))
+    m = struct.unpack("Q", struct.pack("d", actual_temp))[0]
+    return m
 
 def sleep_util(t):
     diff = t - time.time()
     if diff > 0:
         time.sleep(diff)
 
-
 def misc_data_writer():
     global packets
-
-    rate = 10  # hz
+    rate = 10  # Hz
     dt = 1 / rate
     while True:
-        start = time.time()
-
-        clock = get_clock()
-        temp = get_temp()
-        throttled = get_throttled()
-        mem_usage = get_mem_usage()
-        core_usages = get_core_usages()
-
-        packets.append(make_packet(start, clock, our_sensor_ids["core_clock"]))
-        packets.append(make_packet(start, temp, our_sensor_ids["core_temp"]))
-        for i, (k, v) in enumerate(throttled.items()):
-            packets.append(make_packet(start, int(v), our_sensor_ids["throttled"] + i))
-
-        packets.append(make_packet(start, mem_usage, our_sensor_ids["mem_usage"]))
-        for i, usage in enumerate(core_usages):
-            packets.append(make_packet(start, usage, our_sensor_ids["core_usages"] + i))
-
+        start = time.time() # seconds (float)
+        temp = get_temp_c()
+        packets.append(make_packet(int(start * 1e6), temp, 123))
         sleep_util(start + dt)
-
 
 def telem_file_reader():
     global socks, packets
@@ -143,16 +74,15 @@ def telem_file_reader():
                     sock.close()
                     socks.remove((sock, addr))
 
-
 def main():
     file_reader_thr = threading.Thread(target=telem_file_reader, daemon=True)
     file_reader_thr.start()
 
-    # misc_data_writer_thr = threading.Thread(target=misc_data_writer, daemon=True)
-    # misc_data_writer_thr.start()
+    misc_data_writer_thr = threading.Thread(target=misc_data_writer, daemon=True)
+    misc_data_writer_thr.start()
 
     host = "0.0.0.0"
-    port = 25565
+    port = 2702
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -167,7 +97,6 @@ def main():
         print("shutting down server")
     finally:
         server.close()
-
 
 if __name__ == "__main__":
     main()

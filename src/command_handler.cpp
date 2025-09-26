@@ -195,6 +195,10 @@ void* command_handler(void* arg) {
                     std::cout << "START command received at " 
                               << std::put_time(now_tm, "%Y-%m-%d %H:%M:%S")
                               << std::endl;
+                    Telemetry::state_mutex.lock();
+                    BB_State::bb_fu_state = BB_State::State::REGULATE;
+                    BB_State::bb_ox_state = BB_State::State::REGULATE;
+                    Telemetry::state_mutex.unlock();
                     break;
                 }
                 case Command::Commands::ABORT: {
@@ -203,6 +207,10 @@ void* command_handler(void* arg) {
                     std::cout << "ABORT command received at " 
                               << std::put_time(now_tm, "%Y-%m-%d %H:%M:%S")
                               << std::endl;
+                    Telemetry::state_mutex.lock();
+                    BB_State::bb_fu_state = BB_State::State::ISOLATE;
+                    BB_State::bb_ox_state = BB_State::State::ISOLATE;
+                    Telemetry::state_mutex.unlock();
                     break;
                 }
                 case Command::Commands::SET_FU_UPPER_REDLINE: {

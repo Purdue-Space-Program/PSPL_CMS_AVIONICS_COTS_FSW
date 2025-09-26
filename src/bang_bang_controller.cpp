@@ -12,8 +12,6 @@ extern "C" {
 #include <thread>
 #include <cstdint>
 
-#define AVERAGE_WINDOW 5
-
 using namespace BB_State;
 using namespace std::chrono;
 
@@ -32,6 +30,9 @@ uint64_t BB_State::bb_fu_lower_redline = 0;
 uint64_t BB_State::bb_ox_upper_redline = UINT64_MAX;
 uint64_t BB_State::bb_ox_lower_redline = 0;
 
+uint64_t BB_State::fu_upper_redline_hit = false;
+uint64_t BB_State::ox_upper_redline_hit = false;
+
 void* bang_bang_controller(void* arg) {
     sem_wait(&start_sem);
     struct sched_param param;
@@ -44,35 +45,17 @@ void* bang_bang_controller(void* arg) {
     auto fu_last_set = std::chrono::steady_clock::now();
     auto ox_last_set = fu_last_set;
 
+    uint64_t redline_tick_count = 0;
+
     uint64_t intended_fu_pos = BB_Constants::BB_CLOSE;
     uint64_t intended_ox_pos = BB_Constants::BB_CLOSE;
-
-    uint64_t count = 0;
-    uint64_t fu_sum = 0;
-    uint64_t ox_sum = 0;
-    uint64_t fu_data[AVERAGE_WINDOW] = { 0 };
-    uint64_t ox_data[AVERAGE_WINDOW] = { 0 };
 
     while (true) {
         auto now = steady_clock::now();
 
         Telemetry::state_mutex.lock();
-        size_t index = count % AVERAGE_WINDOW;
-        // mark first branch as cold because it only occurs for the first AVERAGE_WINDOW values
-        if (__builtin_expect(count < AVERAGE_WINDOW, 0)) {
-            fu_data[index] = Telemetry::fu_pressure;
-            ox_data[index] = Telemetry::ox_pressure;
-            fu_sum += Telemetry::fu_pressure;
-            ox_sum += Telemetry::ox_pressure;
-        } else {
-            fu_sum = fu_sum - fu_data[index] + Telemetry::fu_pressure;
-            ox_sum = ox_sum - ox_data[index] + Telemetry::ox_pressure;
-            fu_data[index] = Telemetry::fu_pressure;
-            ox_data[index] = Telemetry::ox_pressure;
-        }
-        uint64_t curr_fu_pressure = fu_sum / AVERAGE_WINDOW;
-        uint64_t curr_ox_pressure = ox_sum / AVERAGE_WINDOW;
-        count += 1;
+        uint64_t curr_fu_pressure = Telemetry::fu_pressure;
+        uint64_t curr_ox_pressure = Telemetry::ox_pressure;
 
         State    curr_fu_state = bb_fu_state;
         State    curr_ox_state = bb_ox_state;
@@ -142,10 +125,20 @@ void* bang_bang_controller(void* arg) {
 
         if ((curr_fu_pressure >= curr_fu_upper_redline) ||
             (curr_ox_pressure >= curr_ox_upper_redline)) {
-            curr_fu_pos = BB_Constants::BB_CLOSE;
-            curr_ox_pos = BB_Constants::BB_CLOSE;
-            curr_fu_state = State::ISOLATE;
-            curr_ox_state = State::ISOLATE;
+            redline_tick_count += 1;
+
+            if (redline_tick_count > (10 * BB_Constants::TICK_RATE_MS)) {
+                curr_fu_pos = BB_Constants::BB_CLOSE;
+                curr_ox_pos = BB_Constants::BB_CLOSE;
+                curr_fu_state = State::ISOLATE;
+                curr_ox_state = State::ISOLATE;
+
+                fu_upper_redline_hit = curr_fu_pressure >= curr_fu_upper_redline;
+                ox_upper_redline_hit = curr_ox_pressure >= curr_ox_upper_redline;
+            }
+        }
+        else {
+            redline_tick_count = 0;
         }
 
         fsw_gpio_set_fu(static_cast<int>(curr_fu_pos));
