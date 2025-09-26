@@ -14,7 +14,7 @@ extern "C" {
 }
 
 
-void *data_writer(void *arg) {
+void data_writer() {
     struct sched_param param;
     param.sched_priority = 11; // highest prio
     pthread_setschedparam(pthread_self(), SCHED_RR, &param);
@@ -69,5 +69,5 @@ void *data_writer(void *arg) {
         broadcast_packet(packet);
     }
 
-    return NULL;
+    return;
 }

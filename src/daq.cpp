@@ -29,7 +29,7 @@ uint64_t Telemetry::tc_1 = 0;
 
 Queue Telemetry::data_queue = Queue();
 
-void* daq(void* arg) {
+void daq() {
     struct sched_param param;
     param.sched_priority = 11; // highest prio
     pthread_setschedparam(pthread_self(), SCHED_RR, &param);
@@ -39,7 +39,7 @@ void* daq(void* arg) {
     pspl_spi_init();
 
     if (ADS1263_init_ADC1(ADS1263_DRATE::ADS1263_4800SPS) == 1) {
-        return NULL;
+        return;
     }
 
     sem_post(&start_sem);

@@ -83,9 +83,9 @@ namespace Telemetry {
     constexpr const char* DATA_FOLDER = "/var/lib/pspl_fsw/";
 }
 
-void* daq(void* arg);
-void* bang_bang_controller(void* arg);
-void* command_handler(void* arg);
-void* data_writer(void* arg);
-void* state_writer(void* arg);
-void* server_thread(void* arg);
+void daq();
+void bang_bang_controller();
+void command_handler();
+void data_writer();
+void state_writer();
+void server_thread();

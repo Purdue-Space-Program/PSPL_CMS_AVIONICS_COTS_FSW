@@ -33,7 +33,7 @@ uint64_t BB_State::bb_ox_lower_redline = 0;
 uint64_t BB_State::fu_upper_redline_hit = false;
 uint64_t BB_State::ox_upper_redline_hit = false;
 
-void* bang_bang_controller(void* arg) {
+void bang_bang_controller() {
     sem_wait(&start_sem);
     struct sched_param param;
     param.sched_priority = 11; // highest prio
@@ -155,6 +155,6 @@ void* bang_bang_controller(void* arg) {
     }
 
     fsw_gpio_cleanup();
-    return NULL;
+    return;
 }
 

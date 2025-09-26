@@ -2,8 +2,10 @@
 #include <state.hpp>
 #include <telem_server.hpp>
 
+#include <thread>
+#include <vector>
+
 extern "C" {
-#include <pthread.h>
 #include <semaphore.h>
 }
 
@@ -12,15 +14,21 @@ sem_t start_sem;
 int main() {
     sem_init(&start_sem, 0, 0);
 
-    void* (*funcs[])(void*) = { bang_bang_controller, daq, command_handler, data_writer, state_writer, server_thread};
-    pthread_t threads[6] = {0};
+    std::vector<std::thread> threads;
 
-    for (size_t i = 0; i < 6; i += 1) {
-        pthread_create(threads + i, NULL, funcs[i], NULL);
-    }
+    threads.emplace_back(bang_bang_controller);
+    threads.emplace_back(daq);
+    threads.emplace_back(command_handler);
+    threads.emplace_back(data_writer);
+    threads.emplace_back(state_writer);
+    threads.emplace_back(server_thread);
 
-    for (size_t i = 0; i < 6; i += 1) {
-        pthread_join(threads[i], NULL);
+    for (auto& t : threads)
+    {
+        if (t.joinable())
+        {
+            t.join();
+        }
     }
 
     return 1;

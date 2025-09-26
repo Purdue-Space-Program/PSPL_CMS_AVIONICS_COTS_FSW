@@ -31,7 +31,7 @@ volatile uint64_t* state_telemetry[] = {
     &BB_State::ox_upper_redline_hit,
 };
 
-void* state_writer(void* arg) {
+void state_writer() {
     struct sched_param param;
     param.sched_priority = 11; // highest prio
     pthread_setschedparam(pthread_self(), SCHED_RR, &param);

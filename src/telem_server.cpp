@@ -18,11 +18,11 @@ extern "C" {
 static std::vector<int> client_sockets;
 static std::mutex client_mutex;
 
-void* server_thread(void* arg) {
+void server_thread() {
     int server_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (server_fd < 0) {
         perror("socket");
-        return NULL;
+        return;
     }
 
     int opt = 1;
@@ -36,13 +36,13 @@ void* server_thread(void* arg) {
     if (bind(server_fd, (sockaddr*)&addr, sizeof(addr)) < 0) {
         perror("bind");
         close(server_fd);
-        return NULL;
+        return;
     }
 
     if (listen(server_fd, 5) < 0) {
         perror("listen");
         close(server_fd);
-        return NULL;
+        return;
     }
 
     std::cout << "Server listening on port " << Telemetry::PORT << "\n";

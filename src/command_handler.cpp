@@ -23,7 +23,7 @@ static int cmd_client_sock;
 static struct sockaddr_in address;
 static Command::CommandPacket_t packet;
 
-void* command_handler(void* arg) {
+void command_handler() {
     struct sched_param param;
     param.sched_priority = 11; // highest prio
     pthread_setschedparam(pthread_self(), SCHED_RR, &param);
