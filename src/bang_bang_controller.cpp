@@ -28,8 +28,8 @@ uint64_t BB_State::bb_ox_lower_setp = 0;
 uint64_t BB_State::bb_fu_upper_redline = UINT64_MAX;
 uint64_t BB_State::bb_ox_upper_redline = UINT64_MAX;
 
-uint64_t BB_State::fu_upper_redline_hit = false;
-uint64_t BB_State::ox_upper_redline_hit = false;
+uint64_t BB_State::fu_upper_redline_hit = 0;
+uint64_t BB_State::ox_upper_redline_hit = 0;
 
 void bang_bang_controller() {
     sem_wait(&start_sem);
