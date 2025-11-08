@@ -88,7 +88,7 @@ for cmd, alias in aliases.items():
 def print_help() -> None:
     print('Help!')
 
-df = pd.read_excel('tools/CMS_Avionics_Channels.xlsx', 'channels')
+df = pd.read_excel('PSPL_CMS_AVIONICS_COTS_FSW/tools/CMS_Avionics_Channels.xlsx', 'channels')
 
 def send_command(cmd: str, args: list[str] | None = None, sock = None) -> Status:
     cmd = cmd.lower()
