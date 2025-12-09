@@ -23,8 +23,8 @@ namespace BB_Constants {
     
     // gpio 8,9,10,11,12,13,26 are in use by the daqhat
     // dont use gpio 14 either idk why
-    constexpr int   BB_FU_GPIO_PIN = 21;
-    constexpr int   BB_OX_GPIO_PIN = 20;
+    constexpr int   BB_FU_GPIO_PIN = 20;
+    constexpr int   BB_OX_GPIO_PIN = 21;
 
     constexpr uint8_t TICK_RATE_MS    = 10;
     constexpr uint8_t FU_MIN_RATE_MS  = 50;
