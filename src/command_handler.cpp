@@ -242,11 +242,31 @@ void command_handler() {
                         Telemetry::state_mutex.unlock();
                     }
                     break;
-                }
+                } 
                 case Command::Commands::REDLINE_RESET: {
                     Telemetry::state_mutex.lock();
                     BB_State::fu_upper_redline_hit = 0;
                     BB_State::ox_upper_redline_hit = 0;
+                    Telemetry::state_mutex.unlock();
+                    break;
+                }
+                case Command::Commands::BB_TOGGLE_OX: {
+                    Telemetry::state_mutex.lock();
+                    if (BB_State::bb_ox_state == BB_State::State::OPEN || BB_State::bb_ox_state == BB_State::State::REGULATE) {
+                        BB_State::bb_ox_state = BB_State::State::ISOLATE;
+                    } else {
+                        BB_State::bb_ox_state = BB_State::State::OPEN;
+                    }
+                    Telemetry::state_mutex.unlock();
+                    break;
+                }
+                case Command::Commands::BB_TOGGLE_FU: {
+                    Telemetry::state_mutex.lock();
+                    if (BB_State::bb_fu_state == BB_State::State::OPEN || BB_State::bb_fu_state == BB_State::State::REGULATE) {
+                        BB_State::bb_fu_state = BB_State::State::ISOLATE;
+                    } else {
+                        BB_State::bb_fu_state = BB_State::State::OPEN;
+                    }
                     Telemetry::state_mutex.unlock();
                     break;
                 }

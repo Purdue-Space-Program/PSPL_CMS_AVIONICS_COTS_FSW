@@ -23,6 +23,8 @@ namespace Command {
         SET_FU_UPPER_REDLINE = 16,
         SET_OX_UPPER_REDLINE = 18,
         REDLINE_RESET    = 25,
+        BB_TOGGLE_OX = 26,
+        BB_TOGGLE_FU = 27,
     };
 
     enum class Status : uint8_t {

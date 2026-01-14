@@ -3,7 +3,7 @@
 import subprocess
 
 subprocess.run(["scp", "-P", "22", 
-                "bin/fsw", 
+                "build/fsw", 
                 "tools/end", 
                 "tools/run", 
-                "root@sedsdaq.ecn.purdue.edu:/var/lib"])
+                "root@192.168.2.110:/var/lib"])
