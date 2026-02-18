@@ -2,6 +2,7 @@ extern "C" {
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <fcntl.h>
 #include <unistd.h>
 }
 
@@ -51,6 +52,10 @@ void server_thread() {
         sockaddr_in client_addr{};
         socklen_t client_len = sizeof(client_addr);
         int client_fd = accept(server_fd, (sockaddr*)&client_addr, &client_len);
+
+        int flags = fcntl(client_fd, F_GETFL, 0);
+        fcntl(client_fd, F_SETFL, flags | O_NONBLOCK);
+
         if (client_fd < 0) {
             perror("accept");
             continue;
@@ -71,19 +76,23 @@ void server_thread() {
 
 void broadcast_packet(const Telemetry::SensorPacket_t& packet) {
     std::lock_guard<std::mutex> lock(client_mutex);
-    std::vector<int> dead;
-
-    for (int sock : client_sockets) {
-        ssize_t sent = send(sock, &packet, sizeof(packet), MSG_NOSIGNAL);
-        if (sent != sizeof(packet)) {
-            std::cerr << "Client disconnected\n";
-            close(sock);
-            dead.push_back(sock);
+    
+    auto it = client_sockets.begin();
+    while (it != client_sockets.end()) {
+        ssize_t sent = send(*it, &packet, sizeof(packet), MSG_NOSIGNAL | MSG_DONTWAIT);
+        
+        if (sent < 0) {
+            if (errno == EAGAIN || errno == EWOULDBLOCK) {
+                ++it; 
+            } else {
+                close(*it);
+                it = client_sockets.erase(it);
+            }
+        } else if (sent != sizeof(packet)) {
+            close(*it);
+            it = client_sockets.erase(it);
+        } else {
+            ++it;
         }
-    }
-    for (int sock : dead) {
-        client_sockets.erase(
-            std::remove(client_sockets.begin(), client_sockets.end(), sock),
-            client_sockets.end());
     }
 }

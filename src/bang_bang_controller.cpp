@@ -65,6 +65,8 @@ void bang_bang_controller() {
         uint64_t curr_ox_lower_setp = bb_ox_lower_setp;
         uint64_t curr_fu_upper_redline = bb_fu_upper_redline;
         uint64_t curr_ox_upper_redline = bb_ox_upper_redline;
+        uint64_t curr_fu_redline_hit = fu_upper_redline_hit;
+        uint64_t curr_ox_redline_hit = ox_upper_redline_hit;
         Telemetry::state_mutex.unlock();
 
         // find new FU state
@@ -129,8 +131,8 @@ void bang_bang_controller() {
                 curr_fu_state = State::ISOLATE;
                 curr_ox_state = State::ISOLATE;
 
-                fu_upper_redline_hit = curr_fu_pressure >= curr_fu_upper_redline;
-                ox_upper_redline_hit = curr_ox_pressure >= curr_ox_upper_redline;
+                curr_fu_redline_hit = static_cast<uint64_t>(curr_fu_pressure >= curr_fu_upper_redline);
+                curr_ox_redline_hit = static_cast<uint64_t>(curr_ox_pressure >= curr_ox_upper_redline);
             }
         }
         else {
@@ -145,12 +147,13 @@ void bang_bang_controller() {
         bb_ox_pos   = curr_ox_pos;
         bb_fu_state = curr_fu_state;
         bb_ox_state = curr_ox_state;
+        fu_upper_redline_hit = curr_fu_redline_hit;
+        ox_upper_redline_hit = curr_ox_redline_hit;
         Telemetry::state_mutex.unlock();
 
         std::this_thread::sleep_until(now + milliseconds(BB_Constants::TICK_RATE_MS));
     }
 
     fsw_gpio_cleanup();
-    return;
 }
 

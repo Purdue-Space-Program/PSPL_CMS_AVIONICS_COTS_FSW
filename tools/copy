@@ -6,4 +6,4 @@ subprocess.run(["scp", "-P", "22",
                 "build/fsw", 
                 "tools/end", 
                 "tools/run", 
-                "root@192.168.2.110:/var/lib"])
+                "root@192.168.1.14:/var/lib"])
